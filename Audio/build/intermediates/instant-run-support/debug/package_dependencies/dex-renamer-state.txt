@@ -1,0 +1,13 @@
+#Thu Aug 31 17:29:38 CST 2017
+renamed.3=classes3.dex
+renamed.2=classes2.dex
+renamed.1=classes.dex
+renamed.0=classes4.dex
+base.3=/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/transforms/dex/debug/folders/1000/10/internal_impl-23.0.1_1bc9fa02f2142e49bf7d8aa81df276dba1808c31
+base.2=/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/transforms/dex/debug/folders/1000/10/classes_c75b94d2353444945ca90c66c54064c1a31c48df
+base.1=/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/transforms/dex/debug/folders/1000/10/classes_94ca02fef6aa770a7479094fedb7468713ca2474
+base.0=/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/transforms/dex/debug/folders/1000/10/support-annotations-23.0.1_12e25afdea71a14aadf0679f3ba80285cd5c8228
+file.3=/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/transforms/dex/debug/folders/1000/10/internal_impl-23.0.1_1bc9fa02f2142e49bf7d8aa81df276dba1808c31/classes.dex
+file.2=/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/transforms/dex/debug/folders/1000/10/classes_c75b94d2353444945ca90c66c54064c1a31c48df/classes.dex
+file.1=/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/transforms/dex/debug/folders/1000/10/classes_94ca02fef6aa770a7479094fedb7468713ca2474/classes.dex
+file.0=/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/transforms/dex/debug/folders/1000/10/support-annotations-23.0.1_12e25afdea71a14aadf0679f3ba80285cd5c8228/classes.dex

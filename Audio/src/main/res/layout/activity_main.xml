@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="AudioRecord版" />
+
+    <Button
+        android:id="@+id/record"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="点我录制" />
+
+    <Button
+        android:id="@+id/recording_stop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="点我停止录制" />
+
+    <Button
+        android:id="@+id/playing"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="点我播放" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="MediaRecord版" />
+
+    <Button
+        android:id="@+id/recoding2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="点我录制" />
+
+    <Button
+        android:id="@+id/recoding_stop2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="点我停止录制" />
+
+    <Button
+        android:id="@+id/playing2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="点我播放" />
+</LinearLayout>

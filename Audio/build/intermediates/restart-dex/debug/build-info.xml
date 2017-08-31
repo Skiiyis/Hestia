@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<instant-run
+    abi="x86"
+    api-level="24"
+    build-mode="COLD"
+    density="420dpi"
+    format="10"
+    plugin-version="2.3.3"
+    timestamp="1504172465261"
+    token="598851300733124677"
+    verifier="COLD_SWAP_REQUESTED" >
+
+    <task
+        name="javac"
+        duration="148" />
+    <task
+        name="instant-run-dex"
+        duration="0" />
+    <task
+        name="instant-run-transform"
+        duration="15" />
+    <task
+        name="verifier"
+        duration="1" />
+
+    <artifact
+        location="/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/split-apk/debug/slices/slice_9.apk"
+        type="SPLIT" />
+
+    <build
+        build-mode="FULL"
+        timestamp="1504171773783"
+        verifier="FULL_BUILD_REQUESTED" >
+        <artifact
+            location="/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/split-apk/debug/dep/dependencies.apk"
+            type="SPLIT" />
+        <artifact
+            location="/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/split-apk/debug/slices/slice_0.apk"
+            type="SPLIT" />
+        <artifact
+            location="/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/split-apk/debug/slices/slice_2.apk"
+            type="SPLIT" />
+        <artifact
+            location="/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/split-apk/debug/slices/slice_3.apk"
+            type="SPLIT" />
+        <artifact
+            location="/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/split-apk/debug/slices/slice_1.apk"
+            type="SPLIT" />
+        <artifact
+            location="/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/split-apk/debug/slices/slice_6.apk"
+            type="SPLIT" />
+        <artifact
+            location="/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/split-apk/debug/slices/slice_5.apk"
+            type="SPLIT" />
+        <artifact
+            location="/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/split-apk/debug/slices/slice_4.apk"
+            type="SPLIT" />
+        <artifact
+            location="/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/split-apk/debug/slices/slice_7.apk"
+            type="SPLIT" />
+        <artifact
+            location="/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/split-apk/debug/slices/slice_8.apk"
+            type="SPLIT" />
+        <artifact
+            location="/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/split-apk/debug/slices/slice_9.apk"
+            type="SPLIT" />
+        <artifact
+            location="/Users/huangmeng/Documents/MultimediaStudy/Audio/build/outputs/apk/Audio-debug.apk"
+            type="SPLIT_MAIN" />
+    </build>
+    <build
+        build-mode="COLD"
+        timestamp="1504171930588"
+        verifier="COLD_SWAP_REQUESTED" >
+        <artifact
+            location="/Users/huangmeng/Documents/MultimediaStudy/Audio/build/outputs/apk/Audio-debug.apk"
+            type="SPLIT_MAIN" />
+    </build>
+    <build
+        build-mode="COLD"
+        timestamp="1504172465261"
+        verifier="COLD_SWAP_REQUESTED" >
+        <artifact
+            location="/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/split-apk/debug/slices/slice_9.apk"
+            type="SPLIT" />
+    </build>
+
+</instant-run>

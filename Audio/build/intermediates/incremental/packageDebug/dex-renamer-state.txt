@@ -1,0 +1,7 @@
+#Thu Aug 31 17:32:12 CST 2017
+base.0=/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run_0f3457194fa5560f538cdba68d653ec3afe8162a
+renamed.1=classes2.dex
+renamed.0=classes.dex
+file.1=/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run-bootstrap_54bcc15de48468ab458173b918f334948b5b7ac6/classes.dex
+base.1=/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run-bootstrap_54bcc15de48468ab458173b918f334948b5b7ac6
+file.0=/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run_0f3457194fa5560f538cdba68d653ec3afe8162a/classes.dex

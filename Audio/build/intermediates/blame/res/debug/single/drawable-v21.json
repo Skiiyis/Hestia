@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/res/merged/debug/drawable-v21/notification_action_background.xml",
+        "source": "/Users/huangmeng/.android/build-cache/92647ce53b644d16f2c32379b412aa2af1d7ac7b/output/res/drawable-v21/notification_action_background.xml"
+    },
+    {
+        "merged": "/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/res/merged/debug/drawable-v21/abc_edit_text_material.xml",
+        "source": "/Users/huangmeng/.android/build-cache/1dfe6a223268266db102a134db89b2f36dc86d15/output/res/drawable-v21/abc_edit_text_material.xml"
+    },
+    {
+        "merged": "/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/res/merged/debug/drawable-v21/abc_action_bar_item_background_material.xml",
+        "source": "/Users/huangmeng/.android/build-cache/5ca00e3782d312851c84518479fc11ea97286132/output/res/drawable-v21/abc_action_bar_item_background_material.xml"
+    },
+    {
+        "merged": "/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/res/merged/debug/drawable-v21/abc_btn_colored_material.xml",
+        "source": "/Users/huangmeng/.android/build-cache/5ca00e3782d312851c84518479fc11ea97286132/output/res/drawable-v21/abc_btn_colored_material.xml"
+    }
+]
