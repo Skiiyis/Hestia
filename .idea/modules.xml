@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Audio/Audio.iml" filepath="$PROJECT_DIR$/Audio/Audio.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AudioRecord/AudioRecord.iml" filepath="$PROJECT_DIR$/AudioRecord/AudioRecord.iml" />
       <module fileurl="file://$PROJECT_DIR$/DrawPic/DrawPic.iml" filepath="$PROJECT_DIR$/DrawPic/DrawPic.iml" />
       <module fileurl="file://$PROJECT_DIR$/MultimediaStudy.iml" filepath="$PROJECT_DIR$/MultimediaStudy.iml" />
+      <module fileurl="file://$PROJECT_DIR$/UseCamera/usecamera.iml" filepath="$PROJECT_DIR$/UseCamera/usecamera.iml" />
     </modules>
   </component>
 </project>

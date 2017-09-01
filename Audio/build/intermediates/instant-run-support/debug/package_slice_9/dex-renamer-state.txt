@@ -1,4 +1,0 @@
-#Fri Sep 01 11:39:12 CST 2017
-base.0=/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/transforms/dex/debug/folders/1000/5/slice_9
-renamed.0=classes.dex
-file.0=/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/transforms/dex/debug/folders/1000/5/slice_9/classes.dex
