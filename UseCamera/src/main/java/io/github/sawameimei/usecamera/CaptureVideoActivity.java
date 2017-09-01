@@ -1,6 +1,7 @@
 package io.github.sawameimei.usecamera;
 
 import android.content.pm.PackageManager;
+import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.media.AudioManager;
@@ -77,6 +78,19 @@ public class CaptureVideoActivity extends AppCompatActivity implements View.OnCl
             return;
         }
         fontCamera = Camera.open();
+
+        /**
+         * 获取nv21的原始视频数据
+         */
+        Camera.Parameters parameters = fontCamera.getParameters();
+        parameters.setPreviewFormat(ImageFormat.NV21);
+        fontCamera.setParameters(parameters);
+        fontCamera.setOneShotPreviewCallback(new Camera.PreviewCallback() {
+            @Override
+            public void onPreviewFrame(byte[] data, Camera camera) {
+                //data为原始视频数据 NV21
+            }
+        });
 
         textureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
             @Override
