@@ -1,31 +1,17 @@
 package io.github.sawameimei.audio;
 
-import android.media.AudioFormat;
-import android.media.AudioManager;
-import android.media.AudioRecord;
-import android.media.AudioTrack;
-import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import android.widget.TextView;
 
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.INTERNET;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-import static android.media.AudioTrack.MODE_STREAM;
 
 /**
  * 该实例中，我们使用AudioRecord类来完成我们的音频录制程序
@@ -61,11 +47,11 @@ import static android.media.AudioTrack.MODE_STREAM;
  * 6、Mode：可以是AudioTrack.MODE_STREAM和MODE_STATIC，关于这两种不同之处，可以查阅文档
  * 二、打开一个输入流，指向刚刚录制内容保存的文件，然后开始播放，边读取边播放
  **/
-public class MainActivity extends AppCompatActivity {
 
-    private boolean isRecoding;
-    private File recordingFile;
-    private final int SAMPLE_RATE = 8000;
+/**
+ * 音频基础知识参考 http://ticktick.blog.51cto.com/823160/1748506
+ */
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,82 +62,58 @@ public class MainActivity extends AppCompatActivity {
             requestPermissions(new String[]{RECORD_AUDIO, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE, INTERNET, CAMERA}, 1);
         }
 
-        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/audio/");
-        file.mkdirs();
-        try {
-            recordingFile = File.createTempFile("recording", ".pcm", file);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        findViews();
+    }
 
-        Button record = (Button) findViewById(R.id.record);
+    private TextView title;
+    private Button _switch;
+    private Button record;
+    private Button recordingStop;
+    private Button playing;
+    private AudioOperation[] operations = new AudioOperation[]{new PCMRecordByAudioRecorder(), new ThreeGPRecorderByMediaRecorder(), new WAVRecordByAudioRecorder()};
+    private int currentOperation = 0;
+
+    /**
+     * Find the Views in the layout<br />
+     * <br />
+     * Auto-created on 2017-09-01 10:49:45 by Android Layout Finder
+     * (http://www.buzzingandroid.com/tools/android-layout-finder)
+     */
+    private void findViews() {
+        title = (TextView) findViewById(R.id.title);
+        _switch = (Button) findViewById(R.id._switch);
+        record = (Button) findViewById(R.id.record);
+        recordingStop = (Button) findViewById(R.id.recording_stop);
+        playing = (Button) findViewById(R.id.playing);
+        title.setText("存储路径:\n" + operations[currentOperation].filePath());
+
+        _switch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                currentOperation++;
+                if (currentOperation >= operations.length) {
+                    currentOperation = 0;
+                }
+                title.setText("存储路径:\n" + operations[currentOperation].filePath());
+            }
+        });
         record.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                isRecoding = true;
-                new Thread() {
-                    @Override
-                    public void run() {
-                        recording();
-                    }
-                }.start();
+                operations[currentOperation].startRecord();
             }
         });
-
-        Button recordingStop = (Button) findViewById(R.id.recording_stop);
         recordingStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                isRecoding = false;
+                operations[currentOperation].stopRecord();
             }
         });
-
-        final Button playing = (Button) findViewById(R.id.playing);
         playing.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                playing();
+                operations[currentOperation].play();
             }
         });
-    }
-
-    private void playing() {
-        int minBufferSize = AudioTrack.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
-        byte[] buffer = new byte[minBufferSize];
-        try {
-            DataInputStream dataInputStream = new DataInputStream(new BufferedInputStream(new FileInputStream(recordingFile)));
-            AudioTrack audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, SAMPLE_RATE, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, buffer.length, MODE_STREAM);
-            audioTrack.play();
-            while (dataInputStream.available() > 0 && dataInputStream.read(buffer) > 0) {
-                audioTrack.write(buffer, 0, buffer.length);
-            }
-            audioTrack.stop();
-            dataInputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void recording() {
-        int minBufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
-        AudioRecord audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, minBufferSize);
-        try {
-            DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(recordingFile)));
-            byte[] buffer = new byte[minBufferSize];
-            audioRecord.startRecording();
-            while (isRecoding) {
-                audioRecord.read(buffer, 0, buffer.length);
-                dos.write(buffer);
-            }
-            audioRecord.stop();
-            dos.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void mediaAudioRecording() {
-        MediaRecorder mediaRecorder = new MediaRecorder();
-        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
     }
 }

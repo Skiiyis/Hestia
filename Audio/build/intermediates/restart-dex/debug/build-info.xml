@@ -6,19 +6,19 @@
     density="420dpi"
     format="10"
     plugin-version="2.3.3"
-    timestamp="1504172465261"
+    timestamp="1504237151793"
     token="598851300733124677"
     verifier="COLD_SWAP_REQUESTED" >
 
     <task
         name="javac"
-        duration="148" />
+        duration="197" />
     <task
         name="instant-run-dex"
         duration="0" />
     <task
         name="instant-run-transform"
-        duration="15" />
+        duration="25" />
     <task
         name="verifier"
         duration="1" />
@@ -70,7 +70,15 @@
     </build>
     <build
         build-mode="COLD"
-        timestamp="1504171930588"
+        timestamp="1504234483032"
+        verifier="COLD_SWAP_REQUESTED" >
+        <artifact
+            location="/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/split-apk/debug/slices/slice_4.apk"
+            type="SPLIT" />
+    </build>
+    <build
+        build-mode="COLD"
+        timestamp="1504234538552"
         verifier="COLD_SWAP_REQUESTED" >
         <artifact
             location="/Users/huangmeng/Documents/MultimediaStudy/Audio/build/outputs/apk/Audio-debug.apk"
@@ -78,7 +86,7 @@
     </build>
     <build
         build-mode="COLD"
-        timestamp="1504172465261"
+        timestamp="1504237151793"
         verifier="COLD_SWAP_REQUESTED" >
         <artifact
             location="/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/split-apk/debug/slices/slice_9.apk"

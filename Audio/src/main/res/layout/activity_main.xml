@@ -5,9 +5,16 @@
     android:orientation="vertical">
 
     <TextView
+        android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="AudioRecord版" />
+        android:text="存储路径" />
+
+    <Button
+        android:id="@+id/_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="点我切换" />
 
     <Button
         android:id="@+id/record"
@@ -23,29 +30,6 @@
 
     <Button
         android:id="@+id/playing"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="点我播放" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="MediaRecord版" />
-
-    <Button
-        android:id="@+id/recoding2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="点我录制" />
-
-    <Button
-        android:id="@+id/recoding_stop2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="点我停止录制" />
-
-    <Button
-        android:id="@+id/playing2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="点我播放" />

@@ -1,5 +1,5 @@
 #Internal package file, do not edit.
-#Thu Aug 31 17:32:11 CST 2017
+#Fri Sep 01 10:55:39 CST 2017
 122.file=/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/res/resources-debug.ap_/res/drawable-xxhdpi-v4/abc_btn_rating_star_on_mtrl_alpha.png
 60.set=ANDROID_RESOURCE
 129.file=/Users/huangmeng/Documents/MultimediaStudy/Audio/build/intermediates/res/resources-debug.ap_/res/layout/abc_screen_content_include.xml
