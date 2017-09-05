@@ -1,1 +1,1 @@
-include ':DrawPic', ':AudioRecord', ':UseCamera'
+include ':DrawPic', ':AudioRecord', ':UseCamera', ':MediaCodec'

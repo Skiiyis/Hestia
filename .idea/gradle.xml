@@ -10,6 +10,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/AudioRecord" />
             <option value="$PROJECT_DIR$/DrawPic" />
+            <option value="$PROJECT_DIR$/MediaCodec" />
             <option value="$PROJECT_DIR$/UseCamera" />
           </set>
         </option>

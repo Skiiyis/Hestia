@@ -80,7 +80,7 @@ public class CaptureVideoActivity extends AppCompatActivity implements View.OnCl
         fontCamera = Camera.open();
 
         /**
-         * 获取nv21的原始视频数据
+         * 获取nv21的原始视频数据??
          */
         Camera.Parameters parameters = fontCamera.getParameters();
         parameters.setPreviewFormat(ImageFormat.NV21);

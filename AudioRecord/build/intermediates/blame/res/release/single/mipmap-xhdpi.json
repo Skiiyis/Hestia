@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "/Users/huangmeng/Documents/MultimediaStudy/AudioRecord/build/intermediates/res/merged/release/mipmap-xhdpi/ic_launcher_round.png",
+        "source": "/Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/res/mipmap-xhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "/Users/huangmeng/Documents/MultimediaStudy/AudioRecord/build/intermediates/res/merged/release/mipmap-xhdpi/baidu.png",
+        "source": "/Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/res/mipmap-xhdpi/baidu.png"
+    },
+    {
+        "merged": "/Users/huangmeng/Documents/MultimediaStudy/AudioRecord/build/intermediates/res/merged/release/mipmap-xhdpi/ic_launcher.png",
+        "source": "/Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/res/mipmap-xhdpi/ic_launcher.png"
+    }
+]
