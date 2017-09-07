@@ -4,8 +4,9 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AudioRecord/AudioRecord.iml" filepath="$PROJECT_DIR$/AudioRecord/AudioRecord.iml" />
       <module fileurl="file://$PROJECT_DIR$/DrawPic/DrawPic.iml" filepath="$PROJECT_DIR$/DrawPic/DrawPic.iml" />
-      <module fileurl="file://$PROJECT_DIR$/MediaCodec/mediacodec.iml" filepath="$PROJECT_DIR$/MediaCodec/mediacodec.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MediaCodec/MediaCodec.iml" filepath="$PROJECT_DIR$/MediaCodec/MediaCodec.iml" />
       <module fileurl="file://$PROJECT_DIR$/MultimediaStudy.iml" filepath="$PROJECT_DIR$/MultimediaStudy.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PlayOpenGL/PlayOpenGL.iml" filepath="$PROJECT_DIR$/PlayOpenGL/PlayOpenGL.iml" />
       <module fileurl="file://$PROJECT_DIR$/UseCamera/UseCamera.iml" filepath="$PROJECT_DIR$/UseCamera/UseCamera.iml" />
     </modules>
   </component>

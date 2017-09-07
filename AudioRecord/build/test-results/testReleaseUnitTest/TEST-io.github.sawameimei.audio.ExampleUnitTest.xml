@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="io.github.sawameimei.audio.ExampleUnitTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2017-09-05T06:56:08" hostname="huangmengdeMacBook-Pro.local" time="0.001">
-  <properties/>
-  <testcase name="addition_isCorrect" classname="io.github.sawameimei.audio.ExampleUnitTest" time="0.001"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
