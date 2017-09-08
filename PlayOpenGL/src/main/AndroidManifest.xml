@@ -11,16 +11,21 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".DrawPointActivity" />
         <activity android:name=".DrawLineActivity" />
-        <activity android:name=".DrawTriangleActivity" />
+        <activity android:name=".DrawTriangleActivity">
+        </activity>
         <activity android:name=".DrawIcosahedronActivity"></activity>
         <activity android:name=".solarSystem.DrawSolarSystemActivity">
         </activity>
         <activity android:name=".sphere.DrawSphereActivity">
+        </activity>
+        <activity android:name=".DrawPictureActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".DrawPictureActivity2">
         </activity>
     </application>
 

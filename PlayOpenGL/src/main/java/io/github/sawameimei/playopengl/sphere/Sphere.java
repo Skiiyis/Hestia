@@ -70,14 +70,6 @@ public class Sphere {
         gl.glDisableClientState(GL10.GL_NORMAL_ARRAY);
     }*/
 
-    public void light(GL10 gl) {
-        gl.glEnable(GL10.GL_LIGHTING);
-        gl.glEnable(GL10.GL_LIGHT0);
-        gl.glEnableClientState(GL10.GL_NORMAL_ARRAY);
-        gl.glEnable(GL10.GL_NORMALIZE);
-        gl.glEnable(GL10.GL_RESCALE_NORMAL);
-    }
-
     public void draw(GL10 gl) {
         float theta, pai;
         float co, si;
@@ -170,26 +162,31 @@ public class Sphere {
         FloatBuffer ambBuf = abb.asFloatBuffer();
         ambBuf.put(amb);
         ambBuf.position(0);
+
         ByteBuffer dbb = ByteBuffer.allocateDirect(diff.length * 4);
         dbb.order(ByteOrder.nativeOrder());
         FloatBuffer diffBuf = dbb.asFloatBuffer();
         diffBuf.put(diff);
         diffBuf.position(0);
+
         ByteBuffer sbb = ByteBuffer.allocateDirect(spec.length * 4);
         sbb.order(ByteOrder.nativeOrder());
         FloatBuffer specBuf = sbb.asFloatBuffer();
         specBuf.put(spec);
         specBuf.position(0);
+
         ByteBuffer pbb = ByteBuffer.allocateDirect(pos.length * 4);
         pbb.order(ByteOrder.nativeOrder());
         FloatBuffer posBuf = pbb.asFloatBuffer();
         posBuf.put(pos);
         posBuf.position(0);
+
         ByteBuffer spbb = ByteBuffer.allocateDirect(spot_dir.length * 4);
         spbb.order(ByteOrder.nativeOrder());
         FloatBuffer spot_dirBuf = spbb.asFloatBuffer();
         spot_dirBuf.put(spot_dir);
         spot_dirBuf.position(0);
+
         gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_AMBIENT, ambBuf);
         gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_DIFFUSE, diffBuf);
         gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_SPECULAR, specBuf);

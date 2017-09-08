@@ -18,6 +18,8 @@ http://www.jianshu.com/p/d26e7d788c0e
 5. 学习 Android 平台 OpenGL ES API，了解 OpenGL 开发的基本流程，使用 OpenGL 绘制一个三角形
 http://blog.csdn.net/jason0539/article/details/9164885
 http://www.guidebee.info/download/android/opengles/Android_OpenGL_ES_book.pdf
+https://developer.android.com/guide/topics/graphics/opengl.html
+git clone https://github.com/learnopengles/Learn-OpenGLES-Tutorials.git
 
 6. 学习 Android 平台 OpenGL ES API，学习纹理绘制，能够使用 OpenGL 显示一张图片
 
