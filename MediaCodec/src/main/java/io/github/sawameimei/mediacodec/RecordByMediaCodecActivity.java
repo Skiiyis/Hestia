@@ -43,7 +43,7 @@ public class RecordByMediaCodecActivity extends AppCompatActivity implements Vie
     private Camera fontCamera;
     private boolean capturing;
     private MediaCodec mediaDecoder;
-    public Surface playSurface;
+    private Surface playSurface;
     private SurfaceView surfaceView;
     private SurfaceView previewSurface;
     private Button capture;

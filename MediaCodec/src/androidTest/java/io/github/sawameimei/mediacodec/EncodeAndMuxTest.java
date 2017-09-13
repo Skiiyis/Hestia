@@ -54,7 +54,7 @@ public class EncodeAndMuxTest extends AndroidTestCase {
     // where to put the output file (note: /sdcard requires WRITE_EXTERNAL_STORAGE permission)
     private static final File OUTPUT_DIR = Environment.getExternalStorageDirectory();
 
-    // parameters for the encoder
+    // parameters for the encode
     private static final String MIME_TYPE = "video/avc";    // H.264 Advanced Video Coding
     private static final int FRAME_RATE = 15;               // 15fps
     private static final int IFRAME_INTERVAL = 10;          // 10 seconds between I-frames
@@ -74,7 +74,7 @@ public class EncodeAndMuxTest extends AndroidTestCase {
     // bit rate, in bits per second
     private int mBitRate = -1;
 
-    // encoder / muxer state
+    // encode / muxer state
     private MediaCodec mEncoder;
     private CodecInputSurface mInputSurface;
     private MediaMuxer mMuxer;
@@ -99,36 +99,36 @@ public class EncodeAndMuxTest extends AndroidTestCase {
             mInputSurface.makeCurrent();
 
             for (int i = 0; i < NUM_FRAMES; i++) {
-                // Feed any pending encoder output into the muxer.
+                // Feed any pending encode output into the muxer.
                 drainEncoder(false);
 
                 // Generate a new frame of input.
                 generateSurfaceFrame(i);
                 mInputSurface.setPresentationTime(computePresentationTimeNsec(i));
 
-                // Submit it to the encoder.  The eglSwapBuffers call will block if the input
+                // Submit it to the encode.  The eglSwapBuffers call will block if the input
                 // is full, which would be bad if it stayed full until we dequeued an output
                 // buffer (which we can't do, since we're stuck here).  So long as we fully drain
-                // the encoder before supplying additional input, the system guarantees that we
+                // the encode before supplying additional input, the system guarantees that we
                 // can supply another frame without blocking.
-                if (VERBOSE) Log.d(TAG, "sending frame " + i + " to encoder");
+                if (VERBOSE) Log.d(TAG, "sending frame " + i + " to encode");
                 mInputSurface.swapBuffers();
             }
 
-            // send end-of-stream to encoder, and drain remaining output
+            // send end-of-stream to encode, and drain remaining output
             drainEncoder(true);
         } finally {
-            // release encoder, muxer, and input Surface
+            // release encode, muxer, and input Surface
             releaseEncoder();
         }
 
         // To test the result, open the file with MediaExtractor, and get the format.  Pass
-        // that into the MediaCodec decoder configuration, along with a SurfaceTexture surface,
+        // that into the MediaCodec decode configuration, along with a SurfaceTexture surface,
         // and examine the output with glReadPixels.
     }
 
     /**
-     * Configures encoder and muxer state, and prepares the input Surface.
+     * Configures encode and muxer state, and prepares the input Surface.
      */
     private void prepareEncoder() {
         mBufferInfo = new MediaCodec.BufferInfo();
@@ -144,7 +144,7 @@ public class EncodeAndMuxTest extends AndroidTestCase {
         format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, IFRAME_INTERVAL);
         if (VERBOSE) Log.d(TAG, "format: " + format);
 
-        // Create a MediaCodec encoder, and configure it with our format.  Get a Surface
+        // Create a MediaCodec encode, and configure it with our format.  Get a Surface
         // we can use for input and wrap it with a class that handles the EGL work.
         //
         // If you want to have two EGL contexts -- one for display, one for recording --
@@ -169,7 +169,7 @@ public class EncodeAndMuxTest extends AndroidTestCase {
 
         // Create a MediaMuxer.  We can't add the video track and start() the muxer here,
         // because our MediaFormat doesn't have the Magic Goodies.  These can only be
-        // obtained from the encoder after it has started processing data.
+        // obtained from the encode after it has started processing data.
         //
         // We're not actually interested in multiplexing audio.  We just want to convert
         // the raw H.264 elementary stream we get from MediaCodec into a .mp4 file.
@@ -184,10 +184,10 @@ public class EncodeAndMuxTest extends AndroidTestCase {
     }
 
     /**
-     * Releases encoder resources.  May be called after partial / failed initialization.
+     * Releases encode resources.  May be called after partial / failed initialization.
      */
     private void releaseEncoder() {
-        if (VERBOSE) Log.d(TAG, "releasing encoder objects");
+        if (VERBOSE) Log.d(TAG, "releasing encode objects");
         if (mEncoder != null) {
             mEncoder.stop();
             mEncoder.release();
@@ -205,10 +205,10 @@ public class EncodeAndMuxTest extends AndroidTestCase {
     }
 
     /**
-     * Extracts all pending data from the encoder.
+     * Extracts all pending data from the encode.
      * <p>
      * If endOfStream is not set, this returns when there is no more data to drain.  If it
-     * is set, we send EOS to the encoder, and then iterate until we see EOS on the output.
+     * is set, we send EOS to the encode, and then iterate until we see EOS on the output.
      * Calling this with endOfStream set should be done once, right before stopping the muxer.
      */
     private void drainEncoder(boolean endOfStream) {
@@ -216,7 +216,7 @@ public class EncodeAndMuxTest extends AndroidTestCase {
         if (VERBOSE) Log.d(TAG, "drainEncoder(" + endOfStream + ")");
 
         if (endOfStream) {
-            if (VERBOSE) Log.d(TAG, "sending EOS to encoder");
+            if (VERBOSE) Log.d(TAG, "sending EOS to encode");
             mEncoder.signalEndOfInputStream();
         }
 
@@ -231,7 +231,7 @@ public class EncodeAndMuxTest extends AndroidTestCase {
                     if (VERBOSE) Log.d(TAG, "no output available, spinning to await EOS");
                 }
             } else if (encoderStatus == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
-                // not expected for an encoder
+                // not expected for an encode
                 encoderOutputBuffers = mEncoder.getOutputBuffers();
             } else if (encoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                 // should happen before receiving buffers, and should only happen once
@@ -239,14 +239,14 @@ public class EncodeAndMuxTest extends AndroidTestCase {
                     throw new RuntimeException("format changed twice");
                 }
                 MediaFormat newFormat = mEncoder.getOutputFormat();
-                Log.d(TAG, "encoder output format changed: " + newFormat);
+                Log.d(TAG, "encode output format changed: " + newFormat);
 
                 // now that we have the Magic Goodies, start the muxer
                 mTrackIndex = mMuxer.addTrack(newFormat);
                 mMuxer.start();
                 mMuxerStarted = true;
             } else if (encoderStatus < 0) {
-                Log.w(TAG, "unexpected result from encoder.dequeueOutputBuffer: " +
+                Log.w(TAG, "unexpected result from encode.dequeueOutputBuffer: " +
                         encoderStatus);
                 // let's ignore it
             } else {
@@ -332,11 +332,11 @@ public class EncodeAndMuxTest extends AndroidTestCase {
 
 
     /**
-     * Holds state associated with a Surface used for MediaCodec encoder input.
+     * Holds state associated with a Surface used for MediaCodec encode input.
      * <p>
      * The constructor takes a Surface obtained from MediaCodec.createInputSurface(), and uses that
      * to create an EGL window surface.  Calls to eglSwapBuffers() cause a frame of data to be sent
-     * to the video encoder.
+     * to the video encode.
      * <p>
      * This object owns the Surface -- releasing this will release the Surface too.
      */
