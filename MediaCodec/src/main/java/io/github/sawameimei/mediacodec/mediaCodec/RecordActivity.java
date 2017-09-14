@@ -6,6 +6,7 @@ import android.hardware.Camera;
 import android.media.MediaCodec;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.List;
 
 import io.github.sawameimei.mediacodec.R;
 
@@ -44,8 +46,9 @@ public class RecordActivity extends AppCompatActivity implements View.OnClickLis
     private DecoderDispatcher decoderDispatcher = new DecoderDispatcher();
     private File recordingFile;
 
-    public static final int PREVIEW_WIDTH = 1280;
-    public static final int PREVIEW_HEIGHT = 720;
+    public int previewWidth = 1280;
+    public int previewHeight = 720;
+    private int previewFps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,15 +83,18 @@ public class RecordActivity extends AppCompatActivity implements View.OnClickLis
             return;
         }
         fontCamera = Camera.open();
-        fontCamera.setDisplayOrientation(90);
         /**
          * 获取nv21的原始视频数据??
          */
         Camera.Parameters parameters = fontCamera.getParameters();
+        parameters.setRecordingHint(true);
         parameters.setPreviewFormat(ImageFormat.NV21);
-        parameters.setPreviewSize(PREVIEW_WIDTH, PREVIEW_HEIGHT);
-
+        choosePreviewSize(parameters, previewWidth, previewHeight);
+        previewFps = chooseFixedPreviewFps(parameters, 15 * 1000);
         fontCamera.setParameters(parameters);
+        Camera.Size previewSize = fontCamera.getParameters().getPreviewSize();
+        previewWidth = previewSize.width;
+        previewHeight = previewSize.height;
         fontCamera.setPreviewCallback(new Camera.PreviewCallback() {
             @Override
             public void onPreviewFrame(byte[] data, Camera camera) {
@@ -144,10 +150,25 @@ public class RecordActivity extends AppCompatActivity implements View.OnClickLis
             if (!capturing) {
                 encoderDispatcher.shutDown();
             } else {
-                encoderDispatcher.start(recordingFile, PREVIEW_WIDTH, PREVIEW_HEIGHT);
+                encoderDispatcher.start(recordingFile, previewWidth, previewHeight, previewFps / 1000);
             }
             capture.setText(capturing ? "停止录制" : "点我录制");
         } else if (v == play) {
+            /*final MediaPlayer mediaPlayer = new MediaPlayer();
+            mediaPlayer.reset();
+            try {
+                mediaPlayer.setDataSource(recordingFile.getAbsolutePath());
+                mediaPlayer.setSurface(playSurface);
+                mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mp) {
+                        mediaPlayer.start();
+                    }
+                });
+                mediaPlayer.prepare();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }*/
             if (playSurface != null) {
                 decoderDispatcher.decode(recordingFile, playSurface);
             }
@@ -160,5 +181,75 @@ public class RecordActivity extends AppCompatActivity implements View.OnClickLis
         encoderDispatcher.shutDown();
         decoderDispatcher.shutDown();
         fontCamera.release();
+    }
+
+    private static final String TAG = "RecordActivity";
+
+    /**
+     * Attempts to find a preview size that matches the provided width and height (which
+     * specify the dimensions of the encoded video).  If it fails to find a match it just
+     * uses the default preview size for video.
+     * <p>
+     * TODO: should do a best-fit match, e.g.
+     * https://github.com/commonsguy/cwac-camera/blob/master/camera/src/com/commonsware/cwac/camera/CameraUtils.java
+     */
+    public static void choosePreviewSize(Camera.Parameters parms, int width, int height) {
+        // We should make sure that the requested MPEG size is less than the preferred
+        // size, and has the same aspect ratio.
+        Camera.Size ppsfv = parms.getPreferredPreviewSizeForVideo();
+        if (ppsfv != null) {
+            Log.d(TAG, "Camera preferred preview size for video is " +
+                    ppsfv.width + "x" + ppsfv.height);
+        }
+
+        //for (Camera.Size size : parms.getSupportedPreviewSizes()) {
+        //    Log.d(TAG, "supported: " + size.width + "x" + size.height);
+        //}
+
+        for (Camera.Size size : parms.getSupportedPreviewSizes()) {
+            if (size.width == width && size.height == height) {
+                parms.setPreviewSize(width, height);
+                return;
+            }
+        }
+
+        Log.w(TAG, "Unable to set preview size to " + width + "x" + height);
+        if (ppsfv != null) {
+            parms.setPreviewSize(ppsfv.width, ppsfv.height);
+        }
+        // else use whatever the default size is
+    }
+
+    /**
+     * Attempts to find a fixed preview frame rate that matches the desired frame rate.
+     * <p>
+     * It doesn't seem like there's a great deal of flexibility here.
+     * <p>
+     * TODO: follow the recipe from http://stackoverflow.com/questions/22639336/#22645327
+     *
+     * @return The expected frame rate, in thousands of frames per second.
+     */
+    public static int chooseFixedPreviewFps(Camera.Parameters parms, int desiredThousandFps) {
+        List<int[]> supported = parms.getSupportedPreviewFpsRange();
+
+        for (int[] entry : supported) {
+            //Log.d(TAG, "entry: " + entry[0] + " - " + entry[1]);
+            if ((entry[0] == entry[1]) && (entry[0] == desiredThousandFps)) {
+                parms.setPreviewFpsRange(entry[0], entry[1]);
+                return entry[0];
+            }
+        }
+
+        int[] tmp = new int[2];
+        parms.getPreviewFpsRange(tmp);
+        int guess;
+        if (tmp[0] == tmp[1]) {
+            guess = tmp[0];
+        } else {
+            guess = tmp[1] / 2;     // shrug
+        }
+
+        Log.d(TAG, "Couldn't find match for " + desiredThousandFps + ", using " + guess);
+        return guess;
     }
 }

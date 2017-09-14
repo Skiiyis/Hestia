@@ -17,7 +17,6 @@ import static android.media.MediaCodec.CONFIGURE_FLAG_ENCODE;
 
 public class Hdot264Encoder {
 
-    private static final int FRAME_RATE = 30;
     private static final int FRAME_INTERVAL = 1;
 
     private final File recordingFile;
@@ -28,18 +27,20 @@ public class Hdot264Encoder {
     private int width;
     private int height;
     private long frameIndex;
+    private int frameRate;
 
-    public Hdot264Encoder(File recordingFile, int width, int height) {
+    public Hdot264Encoder(File recordingFile, int width, int height, int frameRate) {
         this.width = width;
         this.height = height;
         this.recordingFile = recordingFile;
+        this.frameRate = frameRate;
     }
 
     public void prepare() {
         MediaFormat format = MediaFormat.createVideoFormat("video/avc", width, height);
         format.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar);
         format.setInteger(MediaFormat.KEY_BIT_RATE, width * height * 5);
-        format.setInteger(MediaFormat.KEY_FRAME_RATE, FRAME_RATE);
+        format.setInteger(MediaFormat.KEY_FRAME_RATE, frameRate);
         format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, FRAME_INTERVAL);
         try {
             mediaEncoder = MediaCodec.createEncoderByType(format.getString(MediaFormat.KEY_MIME));
@@ -66,7 +67,7 @@ public class Hdot264Encoder {
         ByteBuffer inputBuffer = mediaEncoder.getInputBuffer(inputIndex);
         inputBuffer.clear();
         inputBuffer.put(yuv12);
-        mediaEncoder.queueInputBuffer(inputIndex, 0, yuv12.length, computePresentationTime(), 0);
+        mediaEncoder.queueInputBuffer(inputIndex, 0, yuv12.length, System.nanoTime()/1000, 0);
         int bufferIndex = mediaEncoder.dequeueOutputBuffer(bufferInfo, 10000);
         if (bufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
             MediaFormat outputFormat = mediaEncoder.getOutputFormat();
@@ -103,6 +104,6 @@ public class Hdot264Encoder {
 
     private long computePresentationTime() {
         frameIndex++;
-        return frameIndex * 1000000 / FRAME_RATE;
+        return frameIndex * 1000000 / frameRate;
     }
 }

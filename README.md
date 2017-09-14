@@ -8,18 +8,27 @@
 2. 在 Android 平台使用 AudioRecord 和 AudioTrack API 完成音频 PCM 数据的采集和播放，并实现读写音频 wav 文件
 
 3. 在 Android 平台使用 Camera API 进行视频的采集，分别使用 SurfaceView、TextureView 来预览 Camera 数据，取到 NV21 的数据回调
+
+```
 http://www.jianshu.com/p/631a6e971f15#
+```
 
 4. 学习 Android 平台的 MediaExtractor 和 MediaMuxer API，知道如何解析和封装 mp4 文件
+
+```
 http://www.cnblogs.com/jiy-for-you/p/7282033.html
 http://blog.csdn.net/zhi184816/article/details/
 http://www.jianshu.com/p/d26e7d788c0e
+```
 
 5. 学习 Android 平台 OpenGL ES API，了解 OpenGL 开发的基本流程，使用 OpenGL 绘制一个三角形
+
+```
 http://blog.csdn.net/jason0539/article/details/9164885
 http://www.guidebee.info/download/android/opengles/Android_OpenGL_ES_book.pdf
 https://developer.android.com/guide/topics/graphics/opengl.html
-git clone https://github.com/learnopengles/Learn-OpenGLES-Tutorials.git
+https://github.com/learnopengles/Learn-OpenGLES-Tutorials.git
+```
 
 6. 学习 Android 平台 OpenGL ES API，学习纹理绘制，能够使用 OpenGL 显示一张图片
 
@@ -27,9 +36,17 @@ git clone https://github.com/learnopengles/Learn-OpenGLES-Tutorials.git
 
 8. 学习 MediaCodec API，完成视频 H.264 的硬编、硬解
 
+```
+https://github.com/saki4510t/AudioVideoRecordingSample
+http://blog.csdn.net/angcyo/article/details/51043367
+https://github.com/google/grafika
+//硬解播放的时候会加速？解析帧数和播放帧数不一致导致
+```
+
 9. 串联整个音视频录制流程，完成音视频的采集、编码、封包成 mp4 输出
 
 10. 串联整个音视频播放流程，完成 mp4 的解析、音视频的解码、播放和渲染
+
 
 11. 进一步学习 OpenGL，了解如何实现视频的剪裁、旋转、水印、滤镜，并学习 OpenGL 高级特性，如：VBO，VAO，FBO 等等
 

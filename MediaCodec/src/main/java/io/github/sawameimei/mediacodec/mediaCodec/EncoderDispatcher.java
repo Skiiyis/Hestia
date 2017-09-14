@@ -27,8 +27,8 @@ public class EncoderDispatcher implements Runnable {
         Looper.loop();
     }
 
-    public void start(File recordingFile, int width, int height) {
-        encoder = new Hdot264Encoder(recordingFile, width, height);
+    public void start(File recordingFile, int width, int height, int frameRate) {
+        encoder = new Hdot264Encoder(recordingFile, width, height, frameRate);
         encoder.prepare();
         new Thread(this).start();
     }
