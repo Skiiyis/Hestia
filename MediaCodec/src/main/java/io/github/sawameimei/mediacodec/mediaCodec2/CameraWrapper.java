@@ -19,7 +19,7 @@ public class CameraWrapper {
     private int previewHeight = 720;
     private int previewFps = 15 * 1000;
 
-    public void parpare(Context context) throws Exception {
+    public void prepare(Context context) throws Exception {
         boolean hasCamera = context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
         if (!hasCamera) {
             throw new IllegalAccessException("no camera!!");

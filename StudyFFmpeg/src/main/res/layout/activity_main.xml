@@ -29,13 +29,25 @@
     </FrameLayout>
 
 
-    <TextView
-        android:id="@+id/decode"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:text="decode" />
+        android:layout_weight="1">
+
+        <SurfaceView
+            android:id="@+id/playSurface"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/decode"
+            android:textColor="@android:color/white"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="decode" />
+    </FrameLayout>
 
 </LinearLayout>

@@ -36,12 +36,12 @@
         "source": "/Users/huangmeng/.android/build-cache/5ca00e3782d312851c84518479fc11ea97286132/output/res/drawable-xxxhdpi/abc_btn_check_to_on_mtrl_015.png"
     },
     {
-        "merged": "/Users/huangmeng/Documents/MultimediaStudy/AudioRecord/build/intermediates/res/merged/debug/drawable-xxxhdpi/abc_tab_indicator_mtrl_alpha.9.png",
-        "source": "/Users/huangmeng/.android/build-cache/5ca00e3782d312851c84518479fc11ea97286132/output/res/drawable-xxxhdpi/abc_tab_indicator_mtrl_alpha.9.png"
-    },
-    {
         "merged": "/Users/huangmeng/Documents/MultimediaStudy/AudioRecord/build/intermediates/res/merged/debug/drawable-xxxhdpi/abc_ic_menu_share_mtrl_alpha.png",
         "source": "/Users/huangmeng/.android/build-cache/5ca00e3782d312851c84518479fc11ea97286132/output/res/drawable-xxxhdpi/abc_ic_menu_share_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/huangmeng/Documents/MultimediaStudy/AudioRecord/build/intermediates/res/merged/debug/drawable-xxxhdpi/abc_tab_indicator_mtrl_alpha.9.png",
+        "source": "/Users/huangmeng/.android/build-cache/5ca00e3782d312851c84518479fc11ea97286132/output/res/drawable-xxxhdpi/abc_tab_indicator_mtrl_alpha.9.png"
     },
     {
         "merged": "/Users/huangmeng/Documents/MultimediaStudy/AudioRecord/build/intermediates/res/merged/debug/drawable-xxxhdpi/abc_btn_switch_to_on_mtrl_00012.9.png",

@@ -32,4 +32,16 @@ public class FFmpegBridge {
     public interface onDecodeFrame {
         void onDecode(byte[] yuv420p);
     }
+
+    public static native int prepareEncoder(String outputUrl, int width, int height, String mineType, int bitRate, int frameRate);
+
+    public static native int encode(byte[] yuv420p);
+
+    public static native int release();
+
+    public static void muxing(String inputFileVideo, String inputFileAudio, String outputFile) {
+        muxing(inputFileVideo, outputFile);
+    }
+
+    public static native void muxing(String inputFileVideo, String outputFile);
 }

@@ -1,18 +1,28 @@
 -- Merging decision tree log ---
 manifest
 ADDED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml:2:1-25:12
+INJECTED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml:2:1-25:12
+INJECTED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml:2:1-25:12
+INJECTED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml:2:1-25:12
+MERGED from [com.android.support:appcompat-v7:23.0.1] /Users/huangmeng/.gradle/caches/transforms-1/files-1.1/appcompat-v7-23.0.1.aar/e53d411b3370dbbafec9c4187d8777c9/AndroidManifest.xml:17:1-24:12
+MERGED from [com.android.support:support-v4:23.0.1] /Users/huangmeng/.gradle/caches/transforms-1/files-1.1/support-v4-23.0.1.aar/d3dd731addd6cc5f7a1ebaef00eccd91/AndroidManifest.xml:17:1-24:12
+INJECTED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml:2:1-25:12
+INJECTED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml:2:1-25:12
+INJECTED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml:2:1-25:12
 	package
 		ADDED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml:3:5-41
 		INJECTED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml
 		INJECTED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml
 	android:versionName
 		INJECTED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml
+		ADDED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml:2:1-25:12
+		INJECTED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml
+	android:versionCode
+		INJECTED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml
+		ADDED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml:2:1-25:12
 		INJECTED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml
 	xmlns:android
 		ADDED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml:2:11-69
-	android:versionCode
-		INJECTED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml
-		INJECTED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml
 uses-permission#android.permission.RECORD_AUDIO
 ADDED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml:5:5-71
 	android:name
@@ -35,14 +45,16 @@ ADDED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/Andro
 		ADDED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml:9:22-62
 application
 ADDED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml:11:5-23:19
-MERGED from [com.android.support:appcompat-v7:23.0.1] /Users/huangmeng/.android/build-cache/5ca00e3782d312851c84518479fc11ea97286132/output/AndroidManifest.xml:22:5-20
-MERGED from [com.android.support:support-v4:23.0.1] /Users/huangmeng/.android/build-cache/b8ebcc045964229532458f4950d20bfe665c8251/output/AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:appcompat-v7:23.0.1] /Users/huangmeng/.gradle/caches/transforms-1/files-1.1/appcompat-v7-23.0.1.aar/e53d411b3370dbbafec9c4187d8777c9/AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:appcompat-v7:23.0.1] /Users/huangmeng/.gradle/caches/transforms-1/files-1.1/appcompat-v7-23.0.1.aar/e53d411b3370dbbafec9c4187d8777c9/AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:support-v4:23.0.1] /Users/huangmeng/.gradle/caches/transforms-1/files-1.1/support-v4-23.0.1.aar/d3dd731addd6cc5f7a1ebaef00eccd91/AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:support-v4:23.0.1] /Users/huangmeng/.gradle/caches/transforms-1/files-1.1/support-v4-23.0.1.aar/d3dd731addd6cc5f7a1ebaef00eccd91/AndroidManifest.xml:22:5-20
 	android:label
 		ADDED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml:14:9-41
-	android:allowBackup
-		ADDED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml:12:9-35
 	android:icon
 		ADDED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml:13:9-43
+	android:allowBackup
+		ADDED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml:12:9-35
 	android:theme
 		ADDED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml:15:9-40
 activity#io.github.sawameimei.audio.MainActivity
@@ -61,11 +73,19 @@ ADDED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/Andro
 		ADDED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml:20:27-74
 uses-sdk
 INJECTED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml reason: use-sdk injection requested
-MERGED from [com.android.support:appcompat-v7:23.0.1] /Users/huangmeng/.android/build-cache/5ca00e3782d312851c84518479fc11ea97286132/output/AndroidManifest.xml:20:5-43
-MERGED from [com.android.support:support-v4:23.0.1] /Users/huangmeng/.android/build-cache/b8ebcc045964229532458f4950d20bfe665c8251/output/AndroidManifest.xml:20:5-43
+INJECTED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml
+INJECTED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml
+MERGED from [com.android.support:appcompat-v7:23.0.1] /Users/huangmeng/.gradle/caches/transforms-1/files-1.1/appcompat-v7-23.0.1.aar/e53d411b3370dbbafec9c4187d8777c9/AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:appcompat-v7:23.0.1] /Users/huangmeng/.gradle/caches/transforms-1/files-1.1/appcompat-v7-23.0.1.aar/e53d411b3370dbbafec9c4187d8777c9/AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:support-v4:23.0.1] /Users/huangmeng/.gradle/caches/transforms-1/files-1.1/support-v4-23.0.1.aar/d3dd731addd6cc5f7a1ebaef00eccd91/AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:support-v4:23.0.1] /Users/huangmeng/.gradle/caches/transforms-1/files-1.1/support-v4-23.0.1.aar/d3dd731addd6cc5f7a1ebaef00eccd91/AndroidManifest.xml:20:5-43
+INJECTED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml
+INJECTED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml
 	android:targetSdkVersion
 		INJECTED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml
+		ADDED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml
 		INJECTED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml
 	android:minSdkVersion
 		INJECTED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml
+		ADDED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml
 		INJECTED from /Users/huangmeng/Documents/MultimediaStudy/AudioRecord/src/main/AndroidManifest.xml

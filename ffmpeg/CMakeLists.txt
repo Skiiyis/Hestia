@@ -24,6 +24,7 @@ add_library( # Sets the name of the library.
               ${CMAKE_SOURCE_DIR}/src/main/cpp/ffmpeg_opt.c
 
               ${CMAKE_SOURCE_DIR}/src/main/jni/ffmpegbridge.c
+              ${CMAKE_SOURCE_DIR}/src/main/jni/ffmpegbridge_muxing.c
               ${CMAKE_SOURCE_DIR}/src/main/jni/ffmpeglog.h
              )
 

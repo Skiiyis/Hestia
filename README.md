@@ -40,7 +40,8 @@ https://github.com/learnopengles/Learn-OpenGLES-Tutorials.git
 https://github.com/saki4510t/AudioVideoRecordingSample
 http://blog.csdn.net/angcyo/article/details/51043367
 https://github.com/google/grafika
-//硬解播放的时候会加速？解析帧数和播放帧数不一致导致
+//硬解播放的时候会加速？解析帧数和播放帧数不一致导致 dts pts
+http://blog.csdn.net/x_iya/article/details/52495824
 ```
 
 9. 串联整个音视频录制流程，完成音视频的采集、编码、封包成 mp4 输出
@@ -54,6 +55,12 @@ https://github.com/google/grafika
 13. 深入研究音视频相关的网络协议，如 rtmp，hls，以及封包格式，如：flv，mp4
 
 14. 深入学习一些音视频领域的开源项目，如 webrtc，ffmpeg，ijkplayer，librtmp 等等
+
+```
+http://ffmpeg.org/doxygen/trunk/examples.html
+//ffmpeg软编流程图
+![ffmpeg软编流程图](http://img.blog.csdn.net/20140929220326509?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
+```
 
 15. 将 ffmpeg 库移植到 Android 平台，结合上面积累的经验，编写一款简易的音视频播放器
 

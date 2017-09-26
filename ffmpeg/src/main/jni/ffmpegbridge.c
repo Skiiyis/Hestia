@@ -2,6 +2,7 @@
 #include <libavutil/imgutils.h>
 #include "ffmpeg.h"
 #include "ffmpeglog.h"
+#include "ffmpegbrideg_muxing.h"
 
 JNIEXPORT jint JNICALL
 Java_io_github_sawameimei_ffmpeg_FFmpegBridge_commandRun(JNIEnv *env, jclass type,
@@ -312,4 +313,182 @@ Java_io_github_sawameimei_ffmpeg_FFmpegBridge_decode(JNIEnv *env, jclass type, j
     avcodec_close(pCodecCtx);
     avformat_close_input(&pFormatCtx);
 
+}
+
+static AVFormatContext *pFormatCtx;
+static AVOutputFormat *fmt;
+static AVStream *video_st;
+static AVCodecContext *pCodecCtx;
+static AVCodec *pCodec;
+static AVFrame *pFrame;
+static AVPacket pkt;
+static uint8_t *picture_buf;
+static int y_size;
+static int frameIndex;
+
+JNIEXPORT jint JNICALL
+Java_io_github_sawameimei_ffmpeg_FFmpegBridge_prepareEncoder(JNIEnv *env, jclass type,
+                                                             jstring outputUrl_, jint width,
+                                                             jint height, jstring mineType_,
+                                                             jint bitRate, jint frameRate) {
+    const char *outputUrl_str = (*env)->GetStringUTFChars(env, outputUrl_, 0);
+    const char *mineType = (*env)->GetStringUTFChars(env, mineType_, 0);
+    frameIndex = 0;
+    bitRate = 400000;
+
+    av_register_all();
+    pFormatCtx = avformat_alloc_context();
+    //Guess Format
+    fmt = av_guess_format(NULL, outputUrl_str, NULL);
+    pFormatCtx->oformat = fmt;
+
+    if (avio_open(&pFormatCtx->pb, outputUrl_str, AVIO_FLAG_READ_WRITE) < 0) {
+        LOGE(ISDEBUG, "Failed to open output file! \n");
+        return -1;
+    }
+    video_st = avformat_new_stream(pFormatCtx, 0);
+    video_st->time_base.num = 1;
+    video_st->time_base.den = frameRate;
+
+    if (video_st == NULL) {
+        return -1;
+    }
+    //Param that must set
+    pCodecCtx = video_st->codec;
+    pCodecCtx->codec_id = fmt->video_codec;
+    pCodecCtx->codec_type = AVMEDIA_TYPE_VIDEO;
+    pCodecCtx->pix_fmt = AV_PIX_FMT_YUV420P;
+    pCodecCtx->width = width;
+    pCodecCtx->height = height;
+    pCodecCtx->time_base.num = 1;
+    pCodecCtx->time_base.den = frameRate;
+    pCodecCtx->bit_rate = bitRate;
+    pCodecCtx->gop_size = 250;
+
+    //H264
+    //pCodecCtx->me_range = 16;
+    //pCodecCtx->max_qdiff = 4;
+    //pCodecCtx->qcompress = 0.6;
+    pCodecCtx->qmin = 10;
+    pCodecCtx->qmax = 51;
+    //Optional Param
+    pCodecCtx->max_b_frames = 3;
+
+    // Set Option
+    AVDictionary *param = 0;
+    pCodec = avcodec_find_encoder(pCodecCtx->codec_id);
+    if (!pCodec) {
+        LOGE(ISDEBUG, "Can not find encoder! \n");
+        return -1;
+    }
+    if (avcodec_open2(pCodecCtx, pCodec, &param) < 0) {
+        LOGE(ISDEBUG, "Failed to open encoder! \n");
+        return -1;
+    }
+    pFrame = av_frame_alloc();
+    int picture_size = avpicture_get_size(pCodecCtx->pix_fmt, pCodecCtx->width, pCodecCtx->height);
+    av_image_fill_arrays(pFrame->data, pFrame->linesize, NULL,
+                         pCodecCtx->pix_fmt, pCodecCtx->width, pCodecCtx->height, 1);
+    avformat_write_header(pFormatCtx, NULL);
+    av_new_packet(&pkt, picture_size);
+    y_size = pCodecCtx->width * pCodecCtx->height;
+    (*env)->ReleaseStringUTFChars(env, mineType_, mineType);
+    (*env)->ReleaseStringUTFChars(env, outputUrl_, outputUrl_str);
+    return 0;
+}
+
+JNIEXPORT jint JNICALL
+Java_io_github_sawameimei_ffmpeg_FFmpegBridge_encode(JNIEnv *env, jclass type,
+                                                     jbyteArray yuv420p_) {
+    jbyte *yuv420p = (*env)->GetByteArrayElements(env, yuv420p_, NULL);
+
+    pFrame->data[0] = (uint8_t *) (yuv420p);
+    pFrame->data[1] = (uint8_t *) (yuv420p + (size_t) y_size);
+    pFrame->data[2] = (uint8_t *) (yuv420p + (size_t) y_size * 5 / 4);
+    //PTS
+    pFrame->pts = frameIndex;
+    int got_picture = 0;
+    //Encode
+    int ret = avcodec_encode_video2(pCodecCtx, &pkt, pFrame, &got_picture);
+    if (ret < 0) {
+        LOGE(ISDEBUG, "Failed to encode! \n");
+        return -1;
+    }
+    frameIndex++;
+    if (got_picture == 1) {
+        LOGE(ISDEBUG, "Succeed to encode frame: %5d\tsize:%5d\n", frameIndex, pkt.size);
+        pkt.stream_index = video_st->index;
+        ret = av_write_frame(pFormatCtx, &pkt);
+        av_free_packet(&pkt);
+    }
+    (*env)->ReleaseByteArrayElements(env, yuv420p_, yuv420p, 0);
+    return ret;
+}
+
+int flush_encoder(AVFormatContext *fmt_ctx, unsigned int stream_index) {
+    int ret;
+    int got_frame;
+    AVPacket enc_pkt;
+    if (!(fmt_ctx->streams[stream_index]->codec->codec->capabilities &
+          CODEC_CAP_DELAY))
+        return 0;
+    while (1) {
+        enc_pkt.data = NULL;
+        enc_pkt.size = 0;
+        av_init_packet(&enc_pkt);
+        ret = avcodec_encode_video2(fmt_ctx->streams[stream_index]->codec, &enc_pkt,
+                                    NULL, &got_frame);
+        av_frame_free(NULL);
+        if (ret < 0)
+            break;
+        if (!got_frame) {
+            ret = 0;
+            break;
+        }
+        LOGE(ISDEBUG, "Flush Encoder: Succeed to encode 1 frame!\tsize:%5d\n", enc_pkt.size);
+        /* mux encoded frame */
+        ret = av_write_frame(fmt_ctx, &enc_pkt);
+        if (ret < 0)
+            break;
+    }
+    return ret;
+}
+
+JNIEXPORT jint JNICALL
+Java_io_github_sawameimei_ffmpeg_FFmpegBridge_release(JNIEnv *env, jclass type) {
+
+    //Flush Encoder
+    int ret = flush_encoder(pFormatCtx, 0);
+    if (ret < 0) {
+        LOGE(ISDEBUG, "Flushing encoder failed\n");
+        return -1;
+    }
+
+    //Write file trailer
+    av_write_trailer(pFormatCtx);
+
+    //Clean
+    if (video_st) {
+        avcodec_close(video_st->codec);
+        av_free(pFrame);
+        av_free(picture_buf);
+    }
+    avio_close(pFormatCtx->pb);
+    avformat_free_context(pFormatCtx);
+}
+
+JNIEXPORT void JNICALL
+Java_io_github_sawameimei_ffmpeg_FFmpegBridge_muxing(JNIEnv *env, jclass type,
+                                                     jstring inputFileVideo_, jstring outputFile_) {
+    const char *inputFileVideo = (*env)->GetStringUTFChars(env, inputFileVideo_, 0);
+    const char *outputFile = (*env)->GetStringUTFChars(env, outputFile_, 0);
+
+    int ret = android_ffmpeg_muxing((char *) inputFileVideo,
+                                    NULL,
+                                    (char *) outputFile);
+
+
+    (*env)->ReleaseStringUTFChars(env, inputFileVideo_, inputFileVideo);
+    (*env)->ReleaseStringUTFChars(env, outputFile_, outputFile);
+    LOGE(ISDEBUG, "end");
 }

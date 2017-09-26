@@ -13,7 +13,7 @@
         android:label="Tests for io.github.sawameimei.audio"
         android:targetPackage="io.github.sawameimei.audio" />
 
-    <application>
+    <application android:debuggable="true" >
         <uses-library android:name="android.test.runner" />
     </application>
 
