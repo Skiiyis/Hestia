@@ -2,6 +2,7 @@ package io.github.sawameimei.studyffmpeg;
 
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
+import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -18,10 +19,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
-
-import io.github.sawameimei.ffmpeg.FFmpegBridge;
 
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.INTERNET;
@@ -50,10 +51,10 @@ public class SecondaryActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(new String[]{RECORD_AUDIO, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE, INTERNET, CAMERA}, 1);
         }
-        final File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/audio/");
-        file.mkdirs();
+        final File dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/audio/");
+        dir.mkdirs();
         try {
-            recordingFile = File.createTempFile("recording", ".h264", file);
+            recordingFile = File.createTempFile("recording", ".h264", dir);
             Log.e("recordingFile", recordingFile.getAbsolutePath().toString());
         } catch (IOException e) {
             e.printStackTrace();
@@ -70,9 +71,13 @@ public class SecondaryActivity extends AppCompatActivity {
             return;
         }
         fontCamera = Camera.open();
-        Camera.Parameters parameters = fontCamera.getParameters();
+        final Camera.Parameters parameters = fontCamera.getParameters();
         parameters.setRecordingHint(true);
-        parameters.setPreviewFormat(ImageFormat.NV21);
+        List<Integer> supportedPreviewFormats = parameters.getSupportedPreviewFormats();
+        Log.e("supportedPreviewFormats", supportedPreviewFormats.toString());
+        parameters.setPreviewFormat(ImageFormat.YV12); //yuv420sp --> yuv420p
+        List<Integer> supportedPictureFormats = parameters.getSupportedPictureFormats();
+        parameters.setPictureFormat(supportedPictureFormats.get(0));
         choosePreviewSize(parameters, previewWidth, previewHeight);
         previewFps = chooseFixedPreviewFps(parameters, 15 * 1000);
         fontCamera.setParameters(parameters);
@@ -83,7 +88,19 @@ public class SecondaryActivity extends AppCompatActivity {
             @Override
             public void onPreviewFrame(byte[] data, Camera camera) {
                 if (capturing) {
-                    encoder.encode(data);
+                    //encoder.encode(data);
+                    try {
+                        data = YV12toNV12(data, previewWidth, previewHeight);
+                        File of = new File(dir, "width_" + previewWidth + "_height_" + previewHeight + ".yuv");
+                        FileOutputStream os = new FileOutputStream(of);
+                        os.write(data);
+                        os.flush();
+                        os.close();
+                        capturing = false;
+                        Toast.makeText(getApplicationContext(), "ffmpeg:Success to save at" + of.getAbsolutePath(), Toast.LENGTH_LONG).show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -134,27 +151,27 @@ public class SecondaryActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View view) {
-                if (capturing) {
+                /*if (capturing) {
                     encoder.endEncode();
-                    File ret = new File(file, "ret.mp4");
+                    File ret = new File(dir, "ret.mp4");
                     encoder.muxing(recordingFile.getAbsolutePath(), null, ret.getAbsolutePath());
                     recordingFile = ret;
                     encoder.shutDown();
                 } else {
                     encoder.start(recordingFile, previewWidth, previewHeight, previewFps);
-                }
+                }*/
                 capturing = !capturing;
                 encode.setText(capturing ? "停止录制" : "点我录制");
             }
         });
 
-        decoder.start();
+        //decoder.start();
         decode.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
-                decoder.decode(recordingFile, playSurface);
-                /*final MediaPlayer mediaPlayer = new MediaPlayer();
+                //decoder.decode(recordingFile, playSurface);
+                final MediaPlayer mediaPlayer = new MediaPlayer();
                 try {
                     mediaPlayer.setDataSource(recordingFile.getAbsolutePath());
                     mediaPlayer.setSurface(playSurface);
@@ -168,9 +185,42 @@ public class SecondaryActivity extends AppCompatActivity {
                     mediaPlayer.prepareAsync();
                 } catch (IOException e) {
                     e.printStackTrace();
-                }*/
+                }
             }
         });
+    }
+
+    private byte[] YV12toNV12(byte[] yv12, int width, int height) {
+        int ySize = width * height;
+        int pixSize = yv12.length;
+        byte[] uTemp = new byte[pixSize / 2];
+        System.arraycopy(yv12, ySize, uTemp, 0, ySize / 4);
+        System.arraycopy(yv12, ySize, yv12, ySize * 5 / 4, ySize / 4);
+        System.arraycopy(uTemp, 0, yv12, ySize, ySize / 4);
+        return yv12;
+    }
+
+    private byte[] NV21toNV12(byte[] yuv420sp, int width, int height) {
+        int ySize = width * height;
+        int pixSize = yuv420sp.length;
+        if (pixSize != ySize * 3 / 2) {
+            throw new RuntimeException("unkonw pixel data");
+        }
+        byte[] yuv420p = new byte[pixSize];
+        System.arraycopy(yuv420sp, 0, yuv420p, 0, ySize); //copy y
+
+        int uPoint = ySize;
+        int vPoint = ySize * 5 / 4;
+        for (int i = ySize; i < pixSize; i++) {
+            if (i % 2 == 0) { //copy u
+                yuv420p[uPoint] = yuv420sp[i];
+                uPoint++;
+            } else { //copy y
+                yuv420p[vPoint] = yuv420sp[i];
+                vPoint++;
+            }
+        }
+        return yuv420p;
     }
 
     public static void choosePreviewSize(Camera.Parameters parms, int width, int height) {
@@ -178,13 +228,9 @@ public class SecondaryActivity extends AppCompatActivity {
         // size, and has the same aspect ratio.
         Camera.Size ppsfv = parms.getPreferredPreviewSizeForVideo();
         if (ppsfv != null) {
-            Log.d(TAG, "Camera preferred preview size for video is " +
+            Log.e(TAG, "Camera preferred preview size for video is " +
                     ppsfv.width + "x" + ppsfv.height);
         }
-
-        //for (Camera.Size size : parms.getSupportedPreviewSizes()) {
-        //    Log.d(TAG, "supported: " + size.width + "x" + size.height);
-        //}
 
         for (Camera.Size size : parms.getSupportedPreviewSizes()) {
             if (size.width == width && size.height == height) {
@@ -193,10 +239,19 @@ public class SecondaryActivity extends AppCompatActivity {
             }
         }
 
-        Log.w(TAG, "Unable to set preview size to " + width + "x" + height);
+        width = 0;
+        height = 0;
+        for (Camera.Size size : parms.getSupportedPreviewSizes()) {
+            width = Math.max(width, size.width);
+            height = Math.max(height, size.height);
+        }
+        parms.setPictureSize(width, height);
+        Log.e(TAG, "set preview size to " + width + "x" + height);
+
+        /*Log.e(TAG, "Unable to set preview size to " + width + "x" + height);
         if (ppsfv != null) {
             parms.setPreviewSize(ppsfv.width, ppsfv.height);
-        }
+        }*/
         // else use whatever the default size is
     }
 
@@ -222,5 +277,11 @@ public class SecondaryActivity extends AppCompatActivity {
 
         Log.d(TAG, "Couldn't find match for " + desiredThousandFps + ", using " + guess);
         return guess;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        fontCamera.release();
     }
 }

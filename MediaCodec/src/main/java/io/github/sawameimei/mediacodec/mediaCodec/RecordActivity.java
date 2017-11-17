@@ -98,7 +98,7 @@ public class RecordActivity extends AppCompatActivity implements View.OnClickLis
         fontCamera.setPreviewCallback(new Camera.PreviewCallback() {
             @Override
             public void onPreviewFrame(byte[] data, Camera camera) {
-                encoderDispatcher.encode(data);
+                encoderDispatcher.encode(NV21ToNV12(data, previewWidth, previewHeight));
             }
         });
 
@@ -141,6 +141,23 @@ public class RecordActivity extends AppCompatActivity implements View.OnClickLis
 
             }
         });
+    }
+
+    private static byte[] NV21ToNV12(byte[] nv21, int width, int height) {
+        int framesize = width * height;
+        byte[] nv12 = new byte[nv21.length];
+        int i = 0, j = 0;
+        System.arraycopy(nv21, 0, nv12, 0, framesize);
+        for (i = 0; i < framesize; i++) {
+            nv12[i] = nv21[i];
+        }
+        for (j = 0; j < framesize / 2; j += 2) {
+            nv12[framesize + j - 1] = nv21[j + framesize];
+        }
+        for (j = 0; j < framesize / 2; j += 2) {
+            nv12[framesize + j] = nv21[j + framesize - 1];
+        }
+        return nv12;
     }
 
     @Override
