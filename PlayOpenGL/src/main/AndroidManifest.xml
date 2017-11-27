@@ -15,15 +15,15 @@
         </activity>
         <activity android:name=".DrawIcosahedronActivity"></activity>
         <activity android:name=".solarSystem.DrawSolarSystemActivity">
-        </activity>
-        <activity android:name=".sphere.DrawSphereActivity">
-        </activity>
-        <activity android:name=".DrawPictureActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".sphere.DrawSphereActivity">
+        </activity>
+        <activity android:name=".DrawPictureActivity">
         </activity>
         <activity android:name=".DrawPictureActivity2">
         </activity>

@@ -166,6 +166,7 @@ class LessonOneRenderer implements GLSurfaceView.Renderer {
         Matrix.setIdentityM(mMVPMatrix, 0);
         glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
         glDrawArrays(GL_TRIANGLES, 0, 3);
+
     }
 
     public void setNear(float near) {
