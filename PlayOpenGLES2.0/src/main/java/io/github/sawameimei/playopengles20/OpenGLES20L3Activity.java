@@ -3,36 +3,20 @@ package io.github.sawameimei.playopengles20;
 import android.content.pm.PackageManager;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
-import android.opengl.EGL14;
 import android.opengl.EGLSurface;
-import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
-import android.opengl.Matrix;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.TextureView;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.List;
-import java.util.Random;
-
-import io.github.sawameimei.playopengles20.common.EGLCore;
-import io.github.sawameimei.playopengles20.common.GLUtil;
-import io.github.sawameimei.playopengles20.common.RawResourceReader;
-import io.github.sawameimei.playopengles20.common.ShaderHelper;
-import io.github.sawameimei.playopengles20.common.TextureHelper;
 
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.INTERNET;
@@ -42,61 +26,15 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class OpenGLES20L3Activity extends AppCompatActivity implements SurfaceTexture.OnFrameAvailableListener, TextureView.SurfaceTextureListener {
 
-    private static String TAG = "OpenGLES2.0";
-    private EGLCore mEGLCore;
-    private int mProgramHandle;
-    private int mFragmentShaderHandle;
-    private int mVertexShaderHandle;
-    private int mTextureHandle;
-    private Handler mMainHandler = new Handler() {
-        @Override
-        public void dispatchMessage(Message msg) {
-            drawFrame();
-        }
-    };
-    private EGLSurface mWindowSurfaceHandle;
-    private SurfaceTexture mCameraSurfaceTexture;
-    private float[] MATRIX_IDENTITY = new float[16];
-    private int muMVPMatrixLoc;
-    private int muTexMatrixLoc;
-    private int maPositionLoc;
-    private int maTextureCoordLoc;
-
-    private static final float FULL_RECTANGLE_COORDS[] = {
-            -1.0f, -1.0f,   // 0 bottom left
-            1.0f, -1.0f,   // 1 bottom right
-            -1.0f, 1.0f,   // 2 top left
-            1.0f, 1.0f,   // 3 top right
-    };
-
-    private static final float FULL_RECTANGLE_TEX_COORDS[] = {
-            0.0f, 0.0f,     // 0 bottom left
-            1.0f, 0.0f,     // 1 bottom right
-            0.0f, 1.0f,     // 2 top left
-            1.0f, 1.0f      // 3 top right
-    };
-
-    private ByteBuffer rectangleVertexBuffer;
-    private ByteBuffer rectangleTextureBuffer;
-    private int mWidth;
-    private int mHeight;
+    public static String TAG = "OpenGLES2.0";
     private TextureView mTextureView;
-
-    {
-        Matrix.setIdentityM(MATRIX_IDENTITY, 0);
-        //Matrix.scaleM(MATRIX_IDENTITY, 0, -1, 1, 1);
-        //Matrix.rotateM(MATRIX_IDENTITY, 0, 270, 0, 0, 1);
-
-        rectangleVertexBuffer = ByteBuffer.allocateDirect(FULL_RECTANGLE_COORDS.length * 4);
-        rectangleVertexBuffer.order(ByteOrder.nativeOrder()).asFloatBuffer().put(FULL_RECTANGLE_COORDS);
-
-        rectangleTextureBuffer = ByteBuffer.allocateDirect(FULL_RECTANGLE_COORDS.length * 4);
-        rectangleTextureBuffer.order(ByteOrder.nativeOrder()).asFloatBuffer().put(FULL_RECTANGLE_TEX_COORDS);
-    }
+    private CameraPreviewHelper previewHelper;
+    private EGLSurface mPreviewSurface;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        previewHelper = new CameraPreviewHelper(this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(new String[]{RECORD_AUDIO, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE, INTERNET, CAMERA}, 1);
@@ -113,72 +51,16 @@ public class OpenGLES20L3Activity extends AppCompatActivity implements SurfaceTe
         setContentView(mTextureView, layoutParams);
     }
 
-    private void drawFrame() {
-        mEGLCore.makeCurrent(mWindowSurfaceHandle, mWindowSurfaceHandle);
-        mCameraSurfaceTexture.updateTexImage();
-        GLUtil.checkGlError("draw start");
-
-        GLES20.glViewport(0, 0, mWidth, mHeight);
-        GLES20.glUseProgram(mProgramHandle);
-        GLUtil.checkGlError("glUseProgram");
-
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, mTextureHandle);
-        GLES20.glUniformMatrix4fv(muMVPMatrixLoc, 1, false, MATRIX_IDENTITY, 0);
-        GLUtil.checkGlError("glUniformMatrix4fv:muMVPMatrixLoc");
-
-        float[] textMatrix = new float[16];
-        mCameraSurfaceTexture.getTransformMatrix(textMatrix);
-        GLES20.glUniformMatrix4fv(muTexMatrixLoc, 1, false, textMatrix, 0);
-        GLUtil.checkGlError("glUniformMatrix4fv:muTexMatrixLoc");
-
-        GLES20.glVertexAttribPointer(maPositionLoc, 2, GLES20.GL_FLOAT, false, 8, rectangleVertexBuffer.position(0));
-        GLES20.glEnableVertexAttribArray(maPositionLoc);
-        GLUtil.checkGlError("glEnableVertexAttribArray:maPositionLoc");
-
-        GLES20.glVertexAttribPointer(maTextureCoordLoc, 2, GLES20.GL_FLOAT, false, 8, rectangleTextureBuffer.position(0));
-        GLES20.glEnableVertexAttribArray(maTextureCoordLoc);
-        GLUtil.checkGlError("glEnableVertexAttribArray:muTexMatrixLoc");
-
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
-
-        GLES20.glDisableVertexAttribArray(maPositionLoc);
-        GLES20.glDisableVertexAttribArray(maTextureCoordLoc);
-        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0);
-        GLES20.glUseProgram(0);
-
-        //drawExtra(new Random().nextInt(2), mWidth, mHeight);
-        mEGLCore.swapBuffers(mWindowSurfaceHandle);
-    }
-
     @Override
     public void onFrameAvailable(SurfaceTexture surfaceTexture) {
-        mMainHandler.sendEmptyMessage(1);
+        previewHelper.drawFrame(mPreviewSurface);
     }
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         try {
-            mWidth = width;
-            mHeight = height;
-
-            mEGLCore = new EGLCore(null, EGLCore.FLAG_RECORDABLE);
-            mWindowSurfaceHandle = mEGLCore.createWindowSurface(surface);
-            mEGLCore.makeCurrent(mWindowSurfaceHandle, mWindowSurfaceHandle);
-
-            mVertexShaderHandle = ShaderHelper.compileShader(GLES20.GL_VERTEX_SHADER, RawResourceReader.readTextFileFromRawResource(this, R.raw.lesson3_vertex_sharder_source));
-            mFragmentShaderHandle = ShaderHelper.compileShader(GLES20.GL_FRAGMENT_SHADER, RawResourceReader.readTextFileFromRawResource(this, R.raw.lesson3_fragment_sharder_source));
-            mProgramHandle = ShaderHelper.createAndLinkProgram(mVertexShaderHandle, mFragmentShaderHandle, new String[]{"aPosition", "aTextureCoord"});
-
-            muMVPMatrixLoc = GLES20.glGetUniformLocation(mProgramHandle, "uMVPMatrix");
-            maPositionLoc = GLES20.glGetAttribLocation(mProgramHandle, "aPosition");
-            maTextureCoordLoc = GLES20.glGetAttribLocation(mProgramHandle, "aTextureCoord");
-            muTexMatrixLoc = GLES20.glGetUniformLocation(mProgramHandle, "uTexMatrix");
-
-            mTextureHandle = TextureHelper.loadOESTexture();
-
-            mCameraSurfaceTexture = new SurfaceTexture(mTextureHandle);
-            mCameraSurfaceTexture.setOnFrameAvailableListener(this);
+            mPreviewSurface = previewHelper.createWindowSurface(surface);
+            SurfaceTexture surfaceTexture = previewHelper.initGLContext(mPreviewSurface, width, height, this);
 
             boolean hasCamera = getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
             if (!hasCamera) {
@@ -206,7 +88,7 @@ public class OpenGLES20L3Activity extends AppCompatActivity implements SurfaceTe
             chooseFixedPreviewFps(parms, 15);
             camera.setParameters(parms);
             parms.setRecordingHint(true);
-            camera.setPreviewTexture(mCameraSurfaceTexture);
+            camera.setPreviewTexture(surfaceTexture);
             camera.startPreview();
         } catch (IOException e) {
             e.printStackTrace();
