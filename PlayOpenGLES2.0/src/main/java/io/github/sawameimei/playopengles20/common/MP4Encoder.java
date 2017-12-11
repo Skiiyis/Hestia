@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import static android.media.MediaCodec.CONFIGURE_FLAG_ENCODE;
 import static io.github.sawameimei.playopengles20.common.MP4Encoder.EncoderThread.ENCODER;
 import static io.github.sawameimei.playopengles20.common.MP4Encoder.EncoderThread.END;
 
@@ -44,25 +43,26 @@ public class MP4Encoder {
         this.recordingFile = recordingFile;
         this.bitRate = bitRate;
         this.frameRate = frameRate;
-        this.encoderThread = new EncoderThread();
     }
 
     public void prepare() {
         MediaFormat format = MediaFormat.createVideoFormat("video/avc", width, height);
         format.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
-        format.setInteger(MediaFormat.KEY_BIT_RATE, width * height * 5);
+        format.setInteger(MediaFormat.KEY_BIT_RATE, bitRate);
         format.setInteger(MediaFormat.KEY_FRAME_RATE, frameRate);
         format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, FRAME_INTERVAL);
         try {
-            mediaEncoder = MediaCodec.createEncoderByType(format.getString(MediaFormat.KEY_MIME));
+            mediaEncoder = MediaCodec.createEncoderByType("video/avc");
             mediaMuxer = new MediaMuxer(recordingFile.getAbsolutePath(), MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
         } catch (IOException e) {
             e.printStackTrace();
             return;
         }
-        mediaEncoder.configure(format, null, null, CONFIGURE_FLAG_ENCODE);
+        mediaEncoder.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
         inputSurface = mediaEncoder.createInputSurface();
         mediaEncoder.start();
+
+        this.encoderThread = new EncoderThread();
         encoderThread.start();
     }
 

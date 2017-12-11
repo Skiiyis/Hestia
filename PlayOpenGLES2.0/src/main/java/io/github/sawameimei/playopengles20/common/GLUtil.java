@@ -1,6 +1,7 @@
 package io.github.sawameimei.playopengles20.common;
 
 import android.opengl.GLES20;
+import android.opengl.Matrix;
 import android.util.Log;
 
 /**
@@ -8,6 +9,12 @@ import android.util.Log;
  */
 
 public class GLUtil {
+
+    public static float[] getIdentityM() {
+        float[] identityM = new float[16];
+        Matrix.setIdentityM(identityM, 0);
+        return identityM;
+    }
 
     public static void checkGlError(String op) {
         int error = GLES20.glGetError();

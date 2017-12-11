@@ -1,15 +1,16 @@
 package io.github.sawameimei.playopengles20;
 
-import android.content.pm.PackageManager;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.opengl.EGLSurface;
+import android.opengl.GLES20;
+import android.opengl.Matrix;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -20,9 +21,13 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
+import io.github.sawameimei.playopengles20.common.CameraPrevGLProgram;
+import io.github.sawameimei.playopengles20.common.CameraUtil;
+import io.github.sawameimei.playopengles20.common.EGLCore;
+import io.github.sawameimei.playopengles20.common.GLProgram;
 import io.github.sawameimei.playopengles20.common.MP4Encoder;
+import io.github.sawameimei.playopengles20.common.TextureHelper;
 
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.INTERNET;
@@ -33,17 +38,34 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 public class OpenGLES20L4Activity extends AppCompatActivity implements SurfaceTexture.OnFrameAvailableListener {
 
     private static String TAG = "OpenGLES2.0";
+
+    private int ENCODER_WIDTH = 1280;
+    private int ENCODER_HEIGHT = 720;
+    private int ENCODER_BIT_RATE = 6000000; // = ENCODER_WIDTH * ENCODER_HEIGHT * 7?
+    private int PREV_FPS = 24;
+
     private SurfaceView mSurfaceView;
     private EGLSurface mPreviewSurface;
     private EGLSurface mPreviewSurface2;
-    private CameraPreviewHelper mCameraPreviewHelper;
     private Button mRecording;
-    public Boolean mIsRecording = false;
     private EGLSurface mRecorderSurface;
     private File recordingFile;
     private SurfaceView mSurfaceView2;
-    public MP4Encoder mEncoder;
+    private MP4Encoder mEncoder;
+    private Camera mCamera;
 
+    private EGLCore mEGLCore = new EGLCore(null, EGLCore.FLAG_RECORDABLE);
+    private GLProgram mPrevProgram;
+
+    private SurfaceTexture mPrevSurfaceTexture;
+
+    private float[] mTextureM = new float[16];
+
+    private int mWidth;
+    private int mHeight;
+
+    private int mProgramHandle;
+    private Boolean mIsRecording = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,14 +100,13 @@ public class OpenGLES20L4Activity extends AppCompatActivity implements SurfaceTe
                 }
                 if (mIsRecording) {
                     mIsRecording = false;
-                    //mEncoder.shutDown();
+                    mEncoder.shutDown();
                 } else {
                     mIsRecording = true;
                 }
             }
         });
 
-        mCameraPreviewHelper = new CameraPreviewHelper(this);
         mSurfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
 
             @Override
@@ -95,48 +116,32 @@ public class OpenGLES20L4Activity extends AppCompatActivity implements SurfaceTe
 
             @Override
             public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-                mPreviewSurface = mCameraPreviewHelper.createWindowSurface(holder.getSurface());
-                SurfaceTexture prevSurfaceTexture = mCameraPreviewHelper.initGLContext(mPreviewSurface, width, height, OpenGLES20L4Activity.this);
-                boolean hasCamera = getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
-                if (!hasCamera) {
-                    Toast.makeText(getApplicationContext(), "没有摄像头！！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                Camera camera = null;
-                Camera.CameraInfo info = new Camera.CameraInfo();
-                // Try to find a front-facing camera (e.g. for videoconferencing).
-                int numCameras = Camera.getNumberOfCameras();
-                for (int i = 0; i < numCameras; i++) {
-                    Camera.getCameraInfo(i, info);
-                    if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-                        camera = Camera.open(i);
-                        break;
-                    }
-                }
-                if (camera == null) {
-                    camera = Camera.open();    // opens first back-facing camera
-                }
-                Camera.Parameters parms = camera.getParameters();
-                //choosePreviewSize(parms, 720, 1280);
-                choosePreviewSize(parms, 1280, 720);
-                int factFps = chooseFixedPreviewFps(parms, 15);
-                camera.setParameters(parms);
-                parms.setRecordingHint(true);
+                mWidth = width;
+                mHeight = height;
+
+                mPreviewSurface = mEGLCore.createWindowSurface(holder.getSurface());
+                mEGLCore.makeCurrent(mPreviewSurface);
+                int textureId = TextureHelper.loadOESTexture();
+                mPrevProgram = new CameraPrevGLProgram(getApplicationContext(), textureId, mTextureM);
+                mProgramHandle = mPrevProgram.compileAndLink();
+                mPrevSurfaceTexture = new SurfaceTexture(textureId);
+                mPrevSurfaceTexture.setOnFrameAvailableListener(OpenGLES20L4Activity.this);
+
                 try {
-                    camera.setPreviewTexture(prevSurfaceTexture);
-                    camera.startPreview();
+                    mCamera = CameraUtil.prevCamera(Camera.CameraInfo.CAMERA_FACING_BACK, mPrevSurfaceTexture, ENCODER_WIDTH, ENCODER_HEIGHT, PREV_FPS);
                 } catch (IOException e) {
                     e.printStackTrace();
+                    Toast.makeText(getApplicationContext(), "could not prevCamera", Toast.LENGTH_SHORT).show();
+                    return;
                 }
-
-                /*try {
-                    mEncoder = new MP4Encoder(width, height, 6000000, factFps / 1000, recordingFile);
+                try {
+                    mEncoder = new MP4Encoder(ENCODER_WIDTH, ENCODER_HEIGHT, ENCODER_BIT_RATE, CameraUtil.getActualPrevFPS(mCamera), recordingFile);
                     mEncoder.prepare();
                     Surface inputSurface = mEncoder.getInputSurface();
-                    mRecorderSurface = mCameraPreviewHelper.createWindowSurface(inputSurface);
+                    mRecorderSurface = mEGLCore.createWindowSurface(inputSurface);
                 } catch (Exception e) {
                     e.printStackTrace();
-                }*/
+                }
             }
 
             @Override
@@ -148,7 +153,7 @@ public class OpenGLES20L4Activity extends AppCompatActivity implements SurfaceTe
         mSurfaceView2.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
-                mPreviewSurface2 = mCameraPreviewHelper.createWindowSurface(holder.getSurface());
+                mPreviewSurface2 = mEGLCore.createWindowSurface(holder.getSurface());
             }
 
             @Override
@@ -164,90 +169,48 @@ public class OpenGLES20L4Activity extends AppCompatActivity implements SurfaceTe
 
     @Override
     public void onFrameAvailable(SurfaceTexture surfaceTexture) {
-        mainHandler.sendEmptyMessage(1);
+        mainHandler.sendEmptyMessage(MSG_FRAME_AVAILABLE);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mCamera.stopPreview();
+        mCamera.release();
+        mCamera = null;
     }
 
     private MainHandler mainHandler = new MainHandler();
+    private long lastTime;
+    private final int MSG_FRAME_AVAILABLE = 1;
 
     private class MainHandler extends Handler {
+
         @Override
         public void dispatchMessage(Message msg) {
             switch (msg.what) {
-                case 1:
-                    mCameraPreviewHelper.drawFrame(mPreviewSurface);
+                case MSG_FRAME_AVAILABLE:
+                    //Log.e(TAG, "currentTime:" + (System.currentTimeMillis() - lastTime));
+                    lastTime = System.currentTimeMillis();
+
+                    mEGLCore.makeCurrent(mPreviewSurface);
+                    mPrevSurfaceTexture.updateTexImage();
+                    mPrevSurfaceTexture.getTransformMatrix(mTextureM);
+                    GLES20.glViewport(0, 0, mWidth, mHeight);
+                    GLES20.glUseProgram(mProgramHandle);
+                    mPrevProgram.drawFrame();
+                    mEGLCore.swapBuffers(mPreviewSurface);
+
                     if (mIsRecording != null && mIsRecording) {
-                        mCameraPreviewHelper.drawFrame(mPreviewSurface2);
+                        mEGLCore.makeCurrent(mRecorderSurface);
+                        GLES20.glViewport(0, 0, ENCODER_WIDTH, ENCODER_HEIGHT);
+                        GLES20.glUseProgram(mProgramHandle);
+                        mPrevProgram.drawFrame();
+                        mEGLCore.swapBuffers(mRecorderSurface);
+                        mEGLCore.setPresentationTime(mRecorderSurface, mPrevSurfaceTexture.getTimestamp());
                     }
                     break;
             }
         }
-    }
-
-    /**
-     * Attempts to find a preview size that matches the provided width and height (which
-     * specify the dimensions of the encoded video).  If it fails to find a match it just
-     * uses the default preview size for video.
-     * <p>
-     * TODO: should do a best-fit match, e.g.
-     * https://github.com/commonsguy/cwac-camera/blob/master/camera/src/com/commonsware/cwac/camera/CameraUtils.java
-     */
-    public static void choosePreviewSize(Camera.Parameters parms, int width, int height) {
-        // We should make sure that the requested MPEG size is less than the preferred
-        // size, and has the same aspect ratio.
-        Camera.Size ppsfv = parms.getPreferredPreviewSizeForVideo();
-        if (ppsfv != null) {
-            Log.d(TAG, "Camera preferred preview size for video is " +
-                    ppsfv.width + "x" + ppsfv.height);
-        }
-
-        //for (Camera.Size size : parms.getSupportedPreviewSizes()) {
-        //    Log.d(TAG, "supported: " + size.width + "x" + size.height);
-        //}
-
-        for (Camera.Size size : parms.getSupportedPreviewSizes()) {
-            if (size.width == width && size.height == height) {
-                parms.setPreviewSize(width, height);
-                return;
-            }
-        }
-
-        Log.w(TAG, "Unable to set preview size to " + width + "x" + height);
-        if (ppsfv != null) {
-            parms.setPreviewSize(ppsfv.width, ppsfv.height);
-        }
-        // else use whatever the default size is
-    }
-
-    /**
-     * Attempts to find a fixed preview frame rate that matches the desired frame rate.
-     * <p>
-     * It doesn't seem like there's a great deal of flexibility here.
-     * <p>
-     * TODO: follow the recipe from http://stackoverflow.com/questions/22639336/#22645327
-     *
-     * @return The expected frame rate, in thousands of frames per second.
-     */
-    public static int chooseFixedPreviewFps(Camera.Parameters parms, int desiredThousandFps) {
-        List<int[]> supported = parms.getSupportedPreviewFpsRange();
-
-        for (int[] entry : supported) {
-            //Log.d(TAG, "entry: " + entry[0] + " - " + entry[1]);
-            if ((entry[0] == entry[1]) && (entry[0] == desiredThousandFps)) {
-                parms.setPreviewFpsRange(entry[0], entry[1]);
-                return entry[0];
-            }
-        }
-
-        int[] tmp = new int[2];
-        parms.getPreviewFpsRange(tmp);
-        int guess;
-        if (tmp[0] == tmp[1]) {
-            guess = tmp[0];
-        } else {
-            guess = tmp[1] / 2;     // shrug
-        }
-
-        Log.d(TAG, "Couldn't find match for " + desiredThousandFps + ", using " + guess);
-        return guess;
     }
 }

@@ -99,7 +99,7 @@ if (supportsEs2)
 			Matrix.multiplyMM
 		####GL传递数据給Program中的属性，并开启着色点着色
 		    //https://baike.baidu.com/item/glVertexAttribPointer/6483823?fr=aladdin
-		    //属性句柄，每个顶点属性的组件数量，每个组件的数据类型，？？，连续顶点的偏移量 基本单位为byte，属性的值的buffer
+		    //属性句柄，每个顶点属性的组件数量(坐标为3（x,y,z）或2 （x,y）颜色为4（r,g,b,a）)，每个组件的数据类型，？？，连续顶点的偏移量 基本单位为byte，属性的值的buffer
 			GLES20.glVertexAttribPointer(attrHandle, attrDateElementSize, GLES20.GL_FLOAT, false, stride, attrDataBuffer);
 			GLES20.glEnableVertexAttribArray(attrHandle);
 		####GL传递MVP矩阵給Program

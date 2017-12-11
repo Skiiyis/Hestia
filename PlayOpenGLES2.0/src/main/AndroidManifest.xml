@@ -21,8 +21,6 @@
         android:theme="@style/AppTheme">
         <activity android:name=".OpenGLES20L1Activity" />
         <activity android:name=".OpenGLES20L2Activity"></activity>
-        <activity android:name=".OpenGLES20L3Activity">
-        </activity>
         <activity android:name=".OpenGLES20L4Activity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
