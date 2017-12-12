@@ -4,15 +4,11 @@ import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.opengl.EGLSurface;
 import android.opengl.GLES20;
-import android.opengl.Matrix;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -46,7 +42,6 @@ public class OpenGLES20L4Activity extends AppCompatActivity implements SurfaceTe
 
     private SurfaceView mSurfaceView;
     private EGLSurface mPreviewSurface;
-    private EGLSurface mPreviewSurface2;
     private Button mRecording;
     private EGLSurface mRecorderSurface;
     private File recordingFile;
@@ -54,27 +49,23 @@ public class OpenGLES20L4Activity extends AppCompatActivity implements SurfaceTe
     private MP4Encoder mEncoder;
     private Camera mCamera;
 
-    private EGLCore mEGLCore = new EGLCore(null, EGLCore.FLAG_RECORDABLE);
+    private EGLCore mEGLCore;
     private GLProgram mPrevProgram;
 
     private SurfaceTexture mPrevSurfaceTexture;
 
     private float[] mTextureM = new float[16];
 
-    private int mWidth;
-    private int mHeight;
-
     private int mProgramHandle;
-    private Boolean mIsRecording = false;
+    private boolean mIsRecording = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_open_gles20_l4);
 
-        mSurfaceView = findViewById(R.id.surfaceView);
-        mSurfaceView2 = findViewById(R.id.surfaceView2);
-        mRecording = findViewById(R.id.recording);
+        mSurfaceView = findViewById(R.id.continuousCapture_surfaceView);
+        mRecording = findViewById(R.id.capture_button);
         mRecording.setText("Start Recording");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -93,17 +84,8 @@ public class OpenGLES20L4Activity extends AppCompatActivity implements SurfaceTe
         mRecording.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mIsRecording != null) {
-                    mRecording.setText(mIsRecording ? "Start Recording" : "Stop Recording");
-                } else {
-                    return;
-                }
-                if (mIsRecording) {
-                    mIsRecording = false;
-                    mEncoder.shutDown();
-                } else {
-                    mIsRecording = true;
-                }
+                mRecording.setText(mIsRecording ? "Start Recording" : "Stop Recording");
+                mIsRecording = !mIsRecording;
             }
         });
 
@@ -111,16 +93,10 @@ public class OpenGLES20L4Activity extends AppCompatActivity implements SurfaceTe
 
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
-
-            }
-
-            @Override
-            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-                mWidth = width;
-                mHeight = height;
-
+                mEGLCore = new EGLCore(null, EGLCore.FLAG_RECORDABLE);
                 mPreviewSurface = mEGLCore.createWindowSurface(holder.getSurface());
                 mEGLCore.makeCurrent(mPreviewSurface);
+
                 int textureId = TextureHelper.loadOESTexture();
                 mPrevProgram = new CameraPrevGLProgram(getApplicationContext(), textureId, mTextureM);
                 mProgramHandle = mPrevProgram.compileAndLink();
@@ -134,83 +110,66 @@ public class OpenGLES20L4Activity extends AppCompatActivity implements SurfaceTe
                     Toast.makeText(getApplicationContext(), "could not prevCamera", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                try {
-                    mEncoder = new MP4Encoder(ENCODER_WIDTH, ENCODER_HEIGHT, ENCODER_BIT_RATE, CameraUtil.getActualPrevFPS(mCamera), recordingFile);
-                    mEncoder.prepare();
-                    Surface inputSurface = mEncoder.getInputSurface();
-                    mRecorderSurface = mEGLCore.createWindowSurface(inputSurface);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void surfaceDestroyed(SurfaceHolder holder) {
-
-            }
-        });
-
-        mSurfaceView2.getHolder().addCallback(new SurfaceHolder.Callback() {
-            @Override
-            public void surfaceCreated(SurfaceHolder holder) {
-                mPreviewSurface2 = mEGLCore.createWindowSurface(holder.getSurface());
+                mEncoder = new MP4Encoder(ENCODER_WIDTH, ENCODER_HEIGHT, ENCODER_BIT_RATE, CameraUtil.getActualPrevFPS(mCamera), recordingFile);
+                mEncoder.prepare();
+                mRecorderSurface = mEGLCore.createWindowSurface(mEncoder.getInputSurface());
             }
 
             @Override
             public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+                Log.d(TAG, "surfaceChanged fmt=" + format + " size=" + width + "x" + height +
+                        " holder=" + holder);
             }
 
             @Override
             public void surfaceDestroyed(SurfaceHolder holder) {
-
+                Log.d(TAG, "surfaceDestroyed holder=" + holder);
             }
         });
     }
 
     @Override
     public void onFrameAvailable(SurfaceTexture surfaceTexture) {
-        mainHandler.sendEmptyMessage(MSG_FRAME_AVAILABLE);
+        mEGLCore.makeCurrent(mPreviewSurface);
+        mPrevSurfaceTexture.updateTexImage();
+        mPrevSurfaceTexture.getTransformMatrix(mTextureM);
+
+        GLES20.glViewport(0, 0, mSurfaceView.getWidth(), mSurfaceView.getHeight());
+        GLES20.glUseProgram(mProgramHandle);
+        mPrevProgram.drawFrame();
+        mEGLCore.swapBuffers(mPreviewSurface);
+
+        if (mIsRecording) {
+            mEGLCore.makeCurrent(mRecorderSurface);
+            GLES20.glViewport(0, 0, ENCODER_WIDTH, ENCODER_HEIGHT);
+            GLES20.glUseProgram(mProgramHandle);
+            mPrevProgram.drawFrame();
+            mEncoder.drainEncoder();
+            mEGLCore.setPresentationTime(mRecorderSurface, mPrevSurfaceTexture.getTimestamp());
+            mEGLCore.swapBuffers(mRecorderSurface);
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mCamera.stopPreview();
-        mCamera.release();
-        mCamera = null;
-    }
-
-    private MainHandler mainHandler = new MainHandler();
-    private long lastTime;
-    private final int MSG_FRAME_AVAILABLE = 1;
-
-    private class MainHandler extends Handler {
-
-        @Override
-        public void dispatchMessage(Message msg) {
-            switch (msg.what) {
-                case MSG_FRAME_AVAILABLE:
-                    //Log.e(TAG, "currentTime:" + (System.currentTimeMillis() - lastTime));
-                    lastTime = System.currentTimeMillis();
-
-                    mEGLCore.makeCurrent(mPreviewSurface);
-                    mPrevSurfaceTexture.updateTexImage();
-                    mPrevSurfaceTexture.getTransformMatrix(mTextureM);
-                    GLES20.glViewport(0, 0, mWidth, mHeight);
-                    GLES20.glUseProgram(mProgramHandle);
-                    mPrevProgram.drawFrame();
-                    mEGLCore.swapBuffers(mPreviewSurface);
-
-                    if (mIsRecording != null && mIsRecording) {
-                        mEGLCore.makeCurrent(mRecorderSurface);
-                        GLES20.glViewport(0, 0, ENCODER_WIDTH, ENCODER_HEIGHT);
-                        GLES20.glUseProgram(mProgramHandle);
-                        mPrevProgram.drawFrame();
-                        mEGLCore.swapBuffers(mRecorderSurface);
-                        mEGLCore.setPresentationTime(mRecorderSurface, mPrevSurfaceTexture.getTimestamp());
-                    }
-                    break;
-            }
+        if (mCamera != null) {
+            mCamera.stopPreview();
+            mCamera.release();
+            mCamera = null;
+            Log.d(TAG, "releaseCamera -- done");
+        }
+        if (mPrevSurfaceTexture != null) {
+            mPrevSurfaceTexture.release();
+            mPrevSurfaceTexture = null;
+        }
+        if (mEncoder != null) {
+            mEncoder.shutDown();
+            mEncoder = null;
+        }
+        if (mEGLCore != null) {
+            mEGLCore.release();
+            mEGLCore = null;
         }
     }
 }
