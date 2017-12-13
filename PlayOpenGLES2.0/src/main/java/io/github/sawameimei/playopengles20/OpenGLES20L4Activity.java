@@ -45,7 +45,6 @@ public class OpenGLES20L4Activity extends AppCompatActivity implements SurfaceTe
     private Button mRecording;
     private EGLSurface mRecorderSurface;
     private File recordingFile;
-    private SurfaceView mSurfaceView2;
     private MP4Encoder mEncoder;
     private Camera mCamera;
 
@@ -56,8 +55,7 @@ public class OpenGLES20L4Activity extends AppCompatActivity implements SurfaceTe
 
     private float[] mTextureM = new float[16];
 
-    private int mProgramHandle;
-    private boolean mIsRecording = true;
+    private boolean mIsRecording = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,15 +91,15 @@ public class OpenGLES20L4Activity extends AppCompatActivity implements SurfaceTe
 
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
-                mEGLCore = new EGLCore(null, EGLCore.FLAG_RECORDABLE);
-                mPreviewSurface = mEGLCore.createWindowSurface(holder.getSurface());
-                mEGLCore.makeCurrent(mPreviewSurface);
-
                 int textureId = TextureHelper.loadOESTexture();
                 mPrevProgram = new CameraPrevGLProgram(getApplicationContext(), textureId, mTextureM);
-                mProgramHandle = mPrevProgram.compileAndLink();
                 mPrevSurfaceTexture = new SurfaceTexture(textureId);
                 mPrevSurfaceTexture.setOnFrameAvailableListener(OpenGLES20L4Activity.this);
+                mEGLCore = new EGLCore(null, EGLCore.FLAG_RECORDABLE);
+
+                mPreviewSurface = mEGLCore.createWindowSurface(holder.getSurface());
+                mEGLCore.makeCurrent(mPreviewSurface);
+                mPrevProgram.compileAndLink();
 
                 try {
                     mCamera = CameraUtil.prevCamera(Camera.CameraInfo.CAMERA_FACING_BACK, mPrevSurfaceTexture, ENCODER_WIDTH, ENCODER_HEIGHT, PREV_FPS);
@@ -130,19 +128,20 @@ public class OpenGLES20L4Activity extends AppCompatActivity implements SurfaceTe
 
     @Override
     public void onFrameAvailable(SurfaceTexture surfaceTexture) {
+        if (mEGLCore == null) {
+            return;
+        }
         mEGLCore.makeCurrent(mPreviewSurface);
         mPrevSurfaceTexture.updateTexImage();
         mPrevSurfaceTexture.getTransformMatrix(mTextureM);
 
-        GLES20.glViewport(0, 0, mSurfaceView.getWidth(), mSurfaceView.getHeight());
-        GLES20.glUseProgram(mProgramHandle);
+        GLES20.glViewport(0, 0, mSurfaceView.getMeasuredWidth(), mSurfaceView.getMeasuredHeight());
         mPrevProgram.drawFrame();
         mEGLCore.swapBuffers(mPreviewSurface);
 
         if (mIsRecording) {
             mEGLCore.makeCurrent(mRecorderSurface);
             GLES20.glViewport(0, 0, ENCODER_WIDTH, ENCODER_HEIGHT);
-            GLES20.glUseProgram(mProgramHandle);
             mPrevProgram.drawFrame();
             mEncoder.drainEncoder();
             mEGLCore.setPresentationTime(mRecorderSurface, mPrevSurfaceTexture.getTimestamp());

@@ -54,7 +54,7 @@ public class CameraPrevGLProgram implements GLProgram {
     }
 
     @Override
-    public int compileAndLink() {
+    public void compileAndLink() {
         mVertexShaderHandle = ShaderHelper.compileShader(GLES20.GL_VERTEX_SHADER, RawResourceReader.readTextFileFromRawResource(mContext.get(), R.raw.lesson3_vertex_sharder_source));
         mFragmentShaderHandle = ShaderHelper.compileShader(GLES20.GL_FRAGMENT_SHADER, RawResourceReader.readTextFileFromRawResource(mContext.get(), R.raw.lesson3_fragment_sharder_source));
         mProgramHandle = ShaderHelper.createAndLinkProgram(mVertexShaderHandle, mFragmentShaderHandle, new String[]{"aPosition", "aTextureCoord"});
@@ -63,7 +63,6 @@ public class CameraPrevGLProgram implements GLProgram {
         maPositionLoc = GLES20.glGetAttribLocation(mProgramHandle, "aPosition");
         maTextureCoordLoc = GLES20.glGetAttribLocation(mProgramHandle, "aTextureCoord");
         muTexMatrixLoc = GLES20.glGetUniformLocation(mProgramHandle, "uTexMatrix");
-        return mProgramHandle;
     }
 
     @Override
@@ -97,6 +96,12 @@ public class CameraPrevGLProgram implements GLProgram {
         GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0);
         GLES20.glUseProgram(0);
         GLUtil.checkGlError("disable");
+    }
+
+    @Override
+    public void release() {
+        GLES20.glUseProgram(0);
+        GLES20.glDeleteProgram(mProgramHandle);
     }
 
     private static class FullRectangleTextureCoords extends GLVertex.FloatGLVertex {

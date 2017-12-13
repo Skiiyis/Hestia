@@ -8,8 +8,9 @@ public interface GLProgram {
     /**
      * @return programHandle
      */
-    int compileAndLink();
+    void compileAndLink();
 
     void drawFrame();
 
+    void release();
 }
