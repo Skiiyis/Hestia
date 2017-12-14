@@ -52,3 +52,28 @@ GL绘制数据
 EGL14.eglSwapBuffers(mEGLDisplay,mEGLSurface);
 
 
+//EGL中几个关键对象的对应关系
+EGLContext 为一个GL程序执行的上下文对象。可以包含一个或多个GLProgram,一个或多个Texture的数据。
+           EGLContext默认和当前线程绑定，一个EGLContext不可以绑定到多个线程？
+           可以通过createContext方法传入一个原有EGLContext来线程共享同一个EGLContext
+GLProgram  通过GLES20.glCreateProgram创建，和当前EGLContext绑定。需要共享GLProgram的时候必须通过共享EGLContext;
+EGLSurface 为一个GL程序执行的目的地（draw/read) 一个EGLSurface的创建和EGLContext无关，只和EGLDisplay,EGLConfig有关
+           一个EGLSurface可以通过makeCurrent方法  绑定到一个EGLContext，并且同时只能绑定到一个EGLContext
+GLTexture  通过GLES20.glGenTextures生成的texure和EGLContext无关，但更新到这个texture上的内容和EGLContext有关
+           线程间共享texture内容必须通过共享EGLContext;推测bindTexture方法和当前EGLContext有关。
+
+//makeCurrent方法中的参数意义
+public static native boolean eglMakeCurrent(
+        EGLDisplay dpy,  //绑定到的Display
+        EGLSurface draw, //绑定的写渲染缓冲区，该缓冲区可以同时为读渲染缓冲区
+        EGLSurface read, //绑定的读渲染缓冲区，该缓冲区可以同时为写渲染缓冲区
+        EGLContext ctx   //绑定到的EGLContext
+    );
+draw 为GLES的draw指令的缓冲区，即drawArrays等命令会将数据填充到该缓冲区
+read 为GLES的read指令的缓冲区，即readPixes等会将会从该缓冲区读取数据出来
+
+//https://katatunix.wordpress.com/2014/09/17/lets-talk-about-eglmakecurrent-eglswapbuffers-glflush-glfinish/
+GLES30.glBlitFramebuffer 这个命令可以将read中的数据拷贝到draw中。
+
+
+
