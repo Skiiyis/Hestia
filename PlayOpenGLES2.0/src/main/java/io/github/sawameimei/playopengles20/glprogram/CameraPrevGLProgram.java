@@ -1,4 +1,4 @@
-package io.github.sawameimei.playopengles20.common;
+package io.github.sawameimei.playopengles20.glprogram;
 
 import android.content.Context;
 import android.opengl.GLES11Ext;
@@ -8,12 +8,17 @@ import android.opengl.Matrix;
 import java.lang.ref.WeakReference;
 
 import io.github.sawameimei.playopengles20.R;
+import io.github.sawameimei.playopengles20.common.GLUtil;
+import io.github.sawameimei.playopengles20.common.GLVertex;
+import io.github.sawameimei.playopengles20.common.RawResourceReader;
+import io.github.sawameimei.playopengles20.common.ShaderHelper;
+import io.github.sawameimei.playopengles20.common.TextureHelper;
 
 /**
  * Created by huangmeng on 2017/12/11.
  */
 
-public class CameraPrevGLProgram implements GLProgram {
+public class CameraPrevGLProgram implements TextureGLProgram {
 
     private final WeakReference<Context> mContext;
 
@@ -29,7 +34,7 @@ public class CameraPrevGLProgram implements GLProgram {
     private int maTextureCoordLoc;
     private int muTexMatrixLoc;
 
-    private final int mTextureId;
+    private int[] mTextureId = new int[1];
 
     private float[] mTextureM = GLUtil.getIdentityM();
     private float[] muPositionM = GLUtil.getIdentityM();
@@ -38,25 +43,18 @@ public class CameraPrevGLProgram implements GLProgram {
         Matrix.scaleM(muPositionM, 0, -1, 1, 1);
     }
 
-    public CameraPrevGLProgram(Context context, int textureId, float[] textureM) {
+    public CameraPrevGLProgram(Context context, float[] textureM) {
         this.mContext = new WeakReference<>(context);
-        this.mTextureId = textureId;
         this.mTextureM = textureM;
         mFullRectangleTextureCoords = new FullRectangleTextureCoords();
         mFullRectangleCoords = new FullRectangleCoords();
-    }
-
-    public CameraPrevGLProgram(Context context, int textureId) {
-        this.mContext = new WeakReference<>(context);
-        this.mTextureId = textureId;
-        mFullRectangleTextureCoords = new FullRectangleTextureCoords();
-        mFullRectangleCoords = new FullRectangleCoords();
+        mTextureId[0] = TextureHelper.loadOESTexture();
     }
 
     @Override
     public void compileAndLink() {
-        mVertexShaderHandle = ShaderHelper.compileShader(GLES20.GL_VERTEX_SHADER, RawResourceReader.readTextFileFromRawResource(mContext.get(), R.raw.lesson3_vertex_sharder_source));
-        mFragmentShaderHandle = ShaderHelper.compileShader(GLES20.GL_FRAGMENT_SHADER, RawResourceReader.readTextFileFromRawResource(mContext.get(), R.raw.lesson3_fragment_sharder_source));
+        mVertexShaderHandle = ShaderHelper.compileShader(GLES20.GL_VERTEX_SHADER, RawResourceReader.readTextFileFromRawResource(mContext.get(), R.raw.camera_preview_vertex_sharder));
+        mFragmentShaderHandle = ShaderHelper.compileShader(GLES20.GL_FRAGMENT_SHADER, RawResourceReader.readTextFileFromRawResource(mContext.get(), R.raw.camera_preview_fragment_sharder));
         mProgramHandle = ShaderHelper.createAndLinkProgram(mVertexShaderHandle, mFragmentShaderHandle, new String[]{"aPosition", "aTextureCoord"});
 
         muMVPMatrixLoc = GLES20.glGetUniformLocation(mProgramHandle, "uMVPMatrix");
@@ -71,7 +69,7 @@ public class CameraPrevGLProgram implements GLProgram {
         GLUtil.checkGlError("glUseProgram");
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, mTextureId);
+        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, mTextureId[0]);
         GLUtil.checkGlError("glBindTexture:mTextureHandle");
 
         GLES20.glUniformMatrix4fv(muMVPMatrixLoc, 1, false, muPositionM, 0);
@@ -100,8 +98,12 @@ public class CameraPrevGLProgram implements GLProgram {
 
     @Override
     public void release() {
-        GLES20.glUseProgram(0);
         GLES20.glDeleteProgram(mProgramHandle);
+    }
+
+    @Override
+    public int[] texture() {
+        return mTextureId;
     }
 
     private static class FullRectangleTextureCoords extends GLVertex.FloatGLVertex {

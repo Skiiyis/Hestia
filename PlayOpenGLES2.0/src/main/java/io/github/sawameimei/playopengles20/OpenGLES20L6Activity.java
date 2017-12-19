@@ -23,11 +23,12 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
 
-import io.github.sawameimei.playopengles20.glprogram.CameraPrevGLProgram;
 import io.github.sawameimei.playopengles20.common.CameraUtil;
 import io.github.sawameimei.playopengles20.common.EGLCore;
-import io.github.sawameimei.playopengles20.glprogram.GLProgram;
 import io.github.sawameimei.playopengles20.common.MP4Encoder;
+import io.github.sawameimei.playopengles20.glprogram.CameraPrevGLProgram;
+import io.github.sawameimei.playopengles20.glprogram.CameraPreviewBeautyGLProgram;
+import io.github.sawameimei.playopengles20.glprogram.GLProgram;
 
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.INTERNET;
@@ -35,12 +36,12 @@ import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
-public class OpenGLES20L5Activity extends AppCompatActivity implements SurfaceTexture.OnFrameAvailableListener {
+public class OpenGLES20L6Activity extends AppCompatActivity implements SurfaceTexture.OnFrameAvailableListener {
 
     private static String TAG = "OpenGLES2.0";
 
-    private int PREV_WIDTH = 1280;
-    private int PREV_HEIGHT = 720;
+    private int PREV_WIDTH = 720;
+    private int PREV_HEIGHT = 1280;
     private int ENCODER_BIT_RATE = 6000000; // = PREV_WIDTH * PREV_HEIGHT * 7?
     private int PREV_FPS = 24;
 
@@ -63,7 +64,7 @@ public class OpenGLES20L5Activity extends AppCompatActivity implements SurfaceTe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_open_gles20_l4);
+        setContentView(R.layout.activity_open_gles20_l6);
 
         mSurfaceView = findViewById(R.id.continuousCapture_surfaceView);
         mRecording = findViewById(R.id.capture_button);
@@ -76,7 +77,7 @@ public class OpenGLES20L5Activity extends AppCompatActivity implements SurfaceTe
         File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/audio/");
         file.mkdirs();
         try {
-            recordingFile = File.createTempFile("recordingL5", ".mp4", file);
+            recordingFile = File.createTempFile("recordingL6", ".mp4", file);
             Log.e(TAG, "filePath:" + recordingFile.getAbsolutePath());
         } catch (Exception e) {
             e.printStackTrace();
@@ -94,10 +95,11 @@ public class OpenGLES20L5Activity extends AppCompatActivity implements SurfaceTe
 
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
-                CameraPrevGLProgram glProgram = new CameraPrevGLProgram(getApplicationContext(), mTextureM);
+                CameraPreviewBeautyGLProgram glProgram = new CameraPreviewBeautyGLProgram(getApplicationContext(), mTextureM, mSurfaceView.getMeasuredWidth(), mSurfaceView.getMeasuredHeight());
+                glProgram.setBeautyLevel(1);
                 mPrevSurfaceTexture = new SurfaceTexture(glProgram.texture()[0]);
                 mPrevProgram = glProgram;
-                mPrevSurfaceTexture.setOnFrameAvailableListener(OpenGLES20L5Activity.this);
+                mPrevSurfaceTexture.setOnFrameAvailableListener(OpenGLES20L6Activity.this);
 
                 mEGLCore = new EGLCore(null, EGLCore.FLAG_RECORDABLE);
                 mPreviewSurface = mEGLCore.createWindowSurface(holder.getSurface());
@@ -105,7 +107,7 @@ public class OpenGLES20L5Activity extends AppCompatActivity implements SurfaceTe
                 mPrevProgram.compileAndLink();
 
                 try {
-                    mCamera = CameraUtil.prevCamera(Camera.CameraInfo.CAMERA_FACING_BACK, mPrevSurfaceTexture, PREV_WIDTH, PREV_HEIGHT, PREV_FPS);
+                    mCamera = CameraUtil.prevCamera(Camera.CameraInfo.CAMERA_FACING_FRONT, mPrevSurfaceTexture, PREV_WIDTH, PREV_HEIGHT, PREV_FPS);
                 } catch (IOException e) {
                     e.printStackTrace();
                     Toast.makeText(getApplicationContext(), "could not prevCamera", Toast.LENGTH_SHORT).show();
@@ -174,8 +176,8 @@ public class OpenGLES20L5Activity extends AppCompatActivity implements SurfaceTe
         public static final int RECORD = 2;
         public static final int RELEASE = 3;
 
-        private int ENCODER_WIDTH = 1280;
-        private int ENCODER_HEIGHT = 720;
+        private int ENCODER_WIDTH = 720;
+        private int ENCODER_HEIGHT = 1280;
         private int ENCODER_BIT_RATE = 6000000; // = ENCODER_WIDTH * ENCODER_HEIGHT * 7?
         private int PREV_FPS = 24;
         private File RECORD_FILE;

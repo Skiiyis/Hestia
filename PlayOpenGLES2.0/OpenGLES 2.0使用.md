@@ -109,6 +109,9 @@ if (supportsEs2)
 			//绘制模式，开始位置，绘制几个顶点
 			GLES20.glDrawArrays(GLES20.GL_TRIANGLES,offset,count);
 
+			//FBO
+			//http://blog.csdn.net/csxiaoshui/article/details/53082141
+
 
 
 		

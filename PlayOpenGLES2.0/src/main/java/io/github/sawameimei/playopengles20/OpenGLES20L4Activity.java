@@ -18,12 +18,11 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
 
-import io.github.sawameimei.playopengles20.common.CameraPrevGLProgram;
+import io.github.sawameimei.playopengles20.glprogram.CameraPrevGLProgram;
 import io.github.sawameimei.playopengles20.common.CameraUtil;
 import io.github.sawameimei.playopengles20.common.EGLCore;
-import io.github.sawameimei.playopengles20.common.GLProgram;
+import io.github.sawameimei.playopengles20.glprogram.GLProgram;
 import io.github.sawameimei.playopengles20.common.MP4Encoder;
-import io.github.sawameimei.playopengles20.common.TextureHelper;
 
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.INTERNET;
@@ -73,7 +72,7 @@ public class OpenGLES20L4Activity extends AppCompatActivity implements SurfaceTe
         File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/audio/");
         file.mkdirs();
         try {
-            recordingFile = File.createTempFile("recording", ".mp4", file);
+            recordingFile = File.createTempFile("recordingL4", ".mp4", file);
             Log.e(TAG, "filePath:" + recordingFile.getAbsolutePath());
         } catch (Exception e) {
             e.printStackTrace();
@@ -82,8 +81,8 @@ public class OpenGLES20L4Activity extends AppCompatActivity implements SurfaceTe
         mRecording.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mRecording.setText(mIsRecording ? "Start Recording" : "Stop Recording");
                 mIsRecording = !mIsRecording;
+                mRecording.setText(mIsRecording ? "Stop Recording" : "Start Recording");
             }
         });
 
@@ -91,9 +90,9 @@ public class OpenGLES20L4Activity extends AppCompatActivity implements SurfaceTe
 
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
-                int textureId = TextureHelper.loadOESTexture();
-                mPrevProgram = new CameraPrevGLProgram(getApplicationContext(), textureId, mTextureM);
-                mPrevSurfaceTexture = new SurfaceTexture(textureId);
+                CameraPrevGLProgram glProgram = new CameraPrevGLProgram(getApplicationContext(), mTextureM);
+                mPrevSurfaceTexture = new SurfaceTexture(glProgram.texture()[0]);
+                mPrevProgram = glProgram;
                 mPrevSurfaceTexture.setOnFrameAvailableListener(OpenGLES20L4Activity.this);
                 mEGLCore = new EGLCore(null, EGLCore.FLAG_RECORDABLE);
 
