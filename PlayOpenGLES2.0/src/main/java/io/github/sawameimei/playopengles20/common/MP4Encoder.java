@@ -77,6 +77,8 @@ public class MP4Encoder {
         if (isMuxerStart) {
             mediaMuxer.stop();
             mediaMuxer.release();
+        }else{
+            recordingFile.delete();
         }
         encoderThread.getEncoderHandler().sendEmptyMessage(END);
     }

@@ -19,12 +19,29 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".OpenGLES20L1Activity" />
-        <activity android:name=".OpenGLES20L2Activity" />
-        <activity android:name=".OpenGLES20L3Activity" />
-        <activity android:name=".OpenGLES20L4Activity" />
-        <activity android:name=".OpenGLES20L5Activity" />
-        <activity android:name=".OpenGLES20L6Activity"></activity>
+        <activity
+            android:name=".OpenGLES20L1Activity"
+            android:label="GLES Demo" />
+        <activity
+            android:name=".OpenGLES20L2Activity"
+            android:label="GLES Near Far 测试" />
+        <activity
+            android:name=".OpenGLES20L3Activity"
+            android:label="无滤镜 单线程录像" />
+        <activity
+            android:name=".OpenGLES20L4Activity"
+            android:label="美颜滤镜 单线程录像" />
+        <activity
+            android:name=".OpenGLES20L5Activity"
+            android:label="无滤镜 多线程录像" />
+        <activity
+            android:name=".OpenGLES20L6Activity"
+            android:label="美颜滤镜 多线程录像" />
+
+        <activity
+            android:name=".OpenGLES20L7Activity"
+            android:label="高亮滤镜 多线程录像" />
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

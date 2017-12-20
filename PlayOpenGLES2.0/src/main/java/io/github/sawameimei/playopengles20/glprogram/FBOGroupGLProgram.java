@@ -8,7 +8,7 @@ import android.util.Size;
  * Created by huangmeng on 2017/12/18.
  */
 
-public class GLFBOGroupProgram implements GLProgram {
+public class FBOGroupGLProgram implements GLProgram {
 
     private final GLProgram mInputProgram;
     private final TextureGLProgram mOutputProgram;
@@ -18,7 +18,7 @@ public class GLFBOGroupProgram implements GLProgram {
     private int[] mFrameBufferTextureId;
     private int[] mFrameBuffer;
 
-    public GLFBOGroupProgram(@NonNull Size textureSize, @NonNull GLProgram inputProgram, @NonNull TextureGLProgram outputProgram, TextureGLProgram... middleWareProgram) {
+    public FBOGroupGLProgram(@NonNull Size textureSize, @NonNull GLProgram inputProgram, @NonNull TextureGLProgram outputProgram, TextureGLProgram... middleWareProgram) {
         this.mTextureSize = textureSize;
         this.mInputProgram = inputProgram;
         this.mOutputProgram = outputProgram;

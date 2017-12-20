@@ -99,7 +99,10 @@ public class CameraPrevGLProgram implements TextureGLProgram {
 
         GLES20.glDisableVertexAttribArray(maPositionLoc);
         GLES20.glDisableVertexAttribArray(maTextureCoordLoc);
+
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0);
+
         GLES20.glUseProgram(0);
         GLUtil.checkGlError("disable");
     }
