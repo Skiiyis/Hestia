@@ -95,15 +95,15 @@ public class OpenGLES20L6Activity extends AppCompatActivity implements SurfaceTe
 
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
+                mEGLCore = new EGLCore(null, EGLCore.FLAG_RECORDABLE);
+                mPreviewSurface = mEGLCore.createWindowSurface(holder.getSurface());
+                mEGLCore.makeCurrent(mPreviewSurface);
+
                 CameraPreviewBeautyGLProgram glProgram = new CameraPreviewBeautyGLProgram(getApplicationContext(), mTextureM, mSurfaceView.getMeasuredWidth(), mSurfaceView.getMeasuredHeight());
                 glProgram.setBeautyLevel(1);
                 mPrevSurfaceTexture = new SurfaceTexture(glProgram.texture()[0]);
                 mPrevProgram = glProgram;
                 mPrevSurfaceTexture.setOnFrameAvailableListener(OpenGLES20L6Activity.this);
-
-                mEGLCore = new EGLCore(null, EGLCore.FLAG_RECORDABLE);
-                mPreviewSurface = mEGLCore.createWindowSurface(holder.getSurface());
-                mEGLCore.makeCurrent(mPreviewSurface);
                 mPrevProgram.compileAndLink();
 
                 try {
@@ -216,7 +216,6 @@ public class OpenGLES20L6Activity extends AppCompatActivity implements SurfaceTe
             mEncoder.prepare();
             mRecorderSurface = mEGLCore.createWindowSurface(mEncoder.getInputSurface());
             mEGLCore.makeCurrent(mRecorderSurface);
-            mPrevProgram.compileAndLink();
         }
 
         private void handleRelease() {

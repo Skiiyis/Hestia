@@ -75,5 +75,30 @@ read 为GLES的read指令的缓冲区，即readPixes等会将会从该缓冲区�
 //https://katatunix.wordpress.com/2014/09/17/lets-talk-about-eglmakecurrent-eglswapbuffers-glflush-glfinish/
 GLES30.glBlitFramebuffer 这个命令可以将read中的数据拷贝到draw中。
 
+//某些手机上的EGLContext共享问题
+比较代码
+1.
+                mTextureId = TextureHelper.loadOESTexture();
+                mPrevProgram = new CameraPrevGLProgram(getApplicationContext(), mTextureM, mTextureId);
+                mPrevSurfaceTexture = new SurfaceTexture(mTextureId);
+                mPrevSurfaceTexture.setOnFrameAvailableListener(OpenGLES20L5Activity.this);
+
+                mEGLCore = new EGLCore(null, EGLCore.FLAG_RECORDABLE);
+                mPreviewSurface = mEGLCore.createWindowSurface(holder.getSurface());
+                mEGLCore.makeCurrent(mPreviewSurface);
+和
+2.
+                mEGLCore = new EGLCore(null, EGLCore.FLAG_RECORDABLE);
+                mPreviewSurface = mEGLCore.createWindowSurface(holder.getSurface());
+                mEGLCore.makeCurrent(mPreviewSurface);
+
+                mTextureId = TextureHelper.loadOESTexture();
+                mPrevProgram = new CameraPrevGLProgram(getApplicationContext(), mTextureM, mTextureId);
+                mPrevSurfaceTexture = new SurfaceTexture(mTextureId);
+                mPrevSurfaceTexture.setOnFrameAvailableListener(OpenGLES20L5Activity.this);
+
+在真机上没有makeCurrent就生成Texture会导致Texture不可跨线程共享。。
+模拟器可以跨线程共享？模拟器上的线程不是操作系统级别的线程?
+
 
 

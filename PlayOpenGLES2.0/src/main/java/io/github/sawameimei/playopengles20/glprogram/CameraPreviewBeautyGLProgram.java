@@ -63,6 +63,16 @@ public class CameraPreviewBeautyGLProgram implements TextureGLProgram {
         mTextureId[0] = TextureHelper.loadOESTexture();
     }
 
+    public CameraPreviewBeautyGLProgram(Context context, float[] textureM, int textureId, int width, int height) {
+        this.mContext = new WeakReference<>(context);
+        this.mTextureM = textureM;
+        mStepOffset[0] = 2.0F / width;
+        mStepOffset[1] = 2.0F / height;
+        mFullRectangleTextureCoords = new FullRectangleTextureCoords();
+        mFullRectangleCoords = new FullRectangleCoords();
+        mTextureId[0] = textureId;
+    }
+
     public void setBeautyLevel(@FloatRange(from = 0, to = 1) float level) {
         mBeautyLevel = 1.0F - (1.0F - 0.33F) * level;
     }

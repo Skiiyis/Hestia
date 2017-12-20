@@ -36,6 +36,7 @@ public class MP4Encoder {
     private int encoderVideoTrackIndex;
     private Surface inputSurface;
     private EncoderThread encoderThread;
+    private boolean isMuxerStart;
 
     public MP4Encoder(int width, int height, int bitRate, int frameRate, File recordingFile) {
         this.width = width;
@@ -73,8 +74,10 @@ public class MP4Encoder {
     public void shutDown() {
         mediaEncoder.stop();
         mediaEncoder.release();
-        mediaMuxer.stop();
-        mediaMuxer.release();
+        if (isMuxerStart) {
+            mediaMuxer.stop();
+            mediaMuxer.release();
+        }
         encoderThread.getEncoderHandler().sendEmptyMessage(END);
     }
 
@@ -114,6 +117,7 @@ public class MP4Encoder {
                     MediaFormat outputFormat = mediaEncoder.getOutputFormat();
                     encoderVideoTrackIndex = mediaMuxer.addTrack(outputFormat);
                     mediaMuxer.start();
+                    isMuxerStart = true;
                 } else if (bufferIndex > 0) {
                     ByteBuffer outputBuffer = mediaEncoder.getOutputBuffer(bufferIndex);
                     if ((bufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {

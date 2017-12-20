@@ -51,6 +51,14 @@ public class CameraPrevGLProgram implements TextureGLProgram {
         mTextureId[0] = TextureHelper.loadOESTexture();
     }
 
+    public CameraPrevGLProgram(Context context, float[] textureM, int textureId) {
+        this.mContext = new WeakReference<>(context);
+        this.mTextureM = textureM;
+        mFullRectangleTextureCoords = new FullRectangleTextureCoords();
+        mFullRectangleCoords = new FullRectangleCoords();
+        mTextureId[0] = textureId;
+    }
+
     @Override
     public void compileAndLink() {
         mVertexShaderHandle = ShaderHelper.compileShader(GLES20.GL_VERTEX_SHADER, RawResourceReader.readTextFileFromRawResource(mContext.get(), R.raw.camera_preview_vertex_sharder));

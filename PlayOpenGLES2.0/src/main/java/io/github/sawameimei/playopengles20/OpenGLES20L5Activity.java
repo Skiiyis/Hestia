@@ -23,6 +23,7 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
 
+import io.github.sawameimei.playopengles20.common.TextureHelper;
 import io.github.sawameimei.playopengles20.glprogram.CameraPrevGLProgram;
 import io.github.sawameimei.playopengles20.common.CameraUtil;
 import io.github.sawameimei.playopengles20.common.EGLCore;
@@ -60,6 +61,8 @@ public class OpenGLES20L5Activity extends AppCompatActivity implements SurfaceTe
     private boolean mIsRecording = false;
     private RecordThread mRecordThread;
 
+    private int mTextureId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,16 +97,29 @@ public class OpenGLES20L5Activity extends AppCompatActivity implements SurfaceTe
 
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
-                CameraPrevGLProgram glProgram = new CameraPrevGLProgram(getApplicationContext(), mTextureM);
-                mPrevSurfaceTexture = new SurfaceTexture(glProgram.texture()[0]);
-                mPrevProgram = glProgram;
+
+                mTextureId = TextureHelper.loadOESTexture();
+                mPrevProgram = new CameraPrevGLProgram(getApplicationContext(), mTextureM, mTextureId);
+                mPrevSurfaceTexture = new SurfaceTexture(mTextureId);
                 mPrevSurfaceTexture.setOnFrameAvailableListener(OpenGLES20L5Activity.this);
 
                 mEGLCore = new EGLCore(null, EGLCore.FLAG_RECORDABLE);
                 mPreviewSurface = mEGLCore.createWindowSurface(holder.getSurface());
                 mEGLCore.makeCurrent(mPreviewSurface);
-                mPrevProgram.compileAndLink();
 
+                //在真机上没有makeCurrent就生成Texture会导致Texture不可跨线程共享。。
+                //模拟器可以跨线程共享？模拟器上的线程不是操作系统级别的线程?
+
+                /*mEGLCore = new EGLCore(null, EGLCore.FLAG_RECORDABLE);
+                mPreviewSurface = mEGLCore.createWindowSurface(holder.getSurface());
+                mEGLCore.makeCurrent(mPreviewSurface);
+
+                mTextureId = TextureHelper.loadOESTexture();
+                mPrevProgram = new CameraPrevGLProgram(getApplicationContext(), mTextureM, mTextureId);
+                mPrevSurfaceTexture = new SurfaceTexture(mTextureId);
+                mPrevSurfaceTexture.setOnFrameAvailableListener(OpenGLES20L5Activity.this);*/
+
+                mPrevProgram.compileAndLink();
                 try {
                     mCamera = CameraUtil.prevCamera(Camera.CameraInfo.CAMERA_FACING_BACK, mPrevSurfaceTexture, PREV_WIDTH, PREV_HEIGHT, PREV_FPS);
                 } catch (IOException e) {

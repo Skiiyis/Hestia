@@ -18,12 +18,11 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
 
-import io.github.sawameimei.playopengles20.glprogram.CameraPrevGLProgram;
 import io.github.sawameimei.playopengles20.common.CameraUtil;
 import io.github.sawameimei.playopengles20.common.EGLCore;
-import io.github.sawameimei.playopengles20.glprogram.CameraPreviewBeautyGLProgram;
-import io.github.sawameimei.playopengles20.glprogram.GLProgram;
 import io.github.sawameimei.playopengles20.common.MP4Encoder;
+import io.github.sawameimei.playopengles20.glprogram.CameraPrevGLProgram;
+import io.github.sawameimei.playopengles20.glprogram.GLProgram;
 
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.INTERNET;
@@ -31,12 +30,12 @@ import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
-public class OpenGLES20L4Activity extends AppCompatActivity implements SurfaceTexture.OnFrameAvailableListener {
+public class OpenGLES20L3Activity extends AppCompatActivity implements SurfaceTexture.OnFrameAvailableListener {
 
     private static String TAG = "OpenGLES2.0";
 
-    private int ENCODER_WIDTH = 720;
-    private int ENCODER_HEIGHT = 1280;
+    private int ENCODER_WIDTH = 1280;
+    private int ENCODER_HEIGHT = 720;
     private int ENCODER_BIT_RATE = 6000000; // = ENCODER_WIDTH * ENCODER_HEIGHT * 7?
     private int PREV_FPS = 24;
 
@@ -60,7 +59,7 @@ public class OpenGLES20L4Activity extends AppCompatActivity implements SurfaceTe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_open_gles20_l6);
+        setContentView(R.layout.activity_open_gles20_l4);
 
         mSurfaceView = findViewById(R.id.continuousCapture_surfaceView);
         mRecording = findViewById(R.id.capture_button);
@@ -91,11 +90,10 @@ public class OpenGLES20L4Activity extends AppCompatActivity implements SurfaceTe
 
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
-                CameraPreviewBeautyGLProgram glProgram = new CameraPreviewBeautyGLProgram(getApplicationContext(), mTextureM, mSurfaceView.getMeasuredWidth(), mSurfaceView.getMeasuredHeight());
-                glProgram.setBeautyLevel(1);
+                CameraPrevGLProgram glProgram = new CameraPrevGLProgram(getApplicationContext(), mTextureM);
                 mPrevSurfaceTexture = new SurfaceTexture(glProgram.texture()[0]);
                 mPrevProgram = glProgram;
-                mPrevSurfaceTexture.setOnFrameAvailableListener(OpenGLES20L4Activity.this);
+                mPrevSurfaceTexture.setOnFrameAvailableListener(OpenGLES20L3Activity.this);
                 mEGLCore = new EGLCore(null, EGLCore.FLAG_RECORDABLE);
 
                 mPreviewSurface = mEGLCore.createWindowSurface(holder.getSurface());
@@ -103,7 +101,7 @@ public class OpenGLES20L4Activity extends AppCompatActivity implements SurfaceTe
                 mPrevProgram.compileAndLink();
 
                 try {
-                    mCamera = CameraUtil.prevCamera(Camera.CameraInfo.CAMERA_FACING_FRONT, mPrevSurfaceTexture, ENCODER_WIDTH, ENCODER_HEIGHT, PREV_FPS);
+                    mCamera = CameraUtil.prevCamera(Camera.CameraInfo.CAMERA_FACING_BACK, mPrevSurfaceTexture, ENCODER_WIDTH, ENCODER_HEIGHT, PREV_FPS);
                 } catch (IOException e) {
                     e.printStackTrace();
                     Toast.makeText(getApplicationContext(), "could not prevCamera", Toast.LENGTH_SHORT).show();

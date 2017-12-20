@@ -111,6 +111,10 @@ public class CameraUtil {
         Camera.Parameters parms = camera.getParameters();
         choosePreviewSize(parms, desiredWidth, desiredHeight);
         chooseFixedPreviewFps(parms, desiredFps);
+        if (parms.getSupportedFocusModes().contains(
+                Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
+            parms.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+        }
         camera.setParameters(parms);
         parms.setRecordingHint(true);
         camera.setPreviewTexture(prevSurfaceTexture);
