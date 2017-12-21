@@ -42,6 +42,10 @@
             android:name=".OpenGLES20L7Activity"
             android:label="高亮滤镜 多线程录像" />
 
+        <activity
+            android:name=".OpenGLES20L8Activity"
+            android:label="多滤镜混合预览" />
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -23,6 +23,5 @@ public class GLUtil {
             Log.e("OpenGLES2.0", msg);
             throw new RuntimeException(msg);
         }
-        //Log.e("OpenGLES2.0", "CatchANR:" + op);
     }
 }

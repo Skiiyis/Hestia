@@ -30,42 +30,45 @@ public class FBOGroupGLProgram implements GLProgram {
         /**
          * 创建FBO,获取一个可用纹理ID
          */
-        mFrameBuffer = new int[1];
-        mFrameBufferTextureId = new int[1];
-        GLES20.glGenFramebuffers(1, mFrameBuffer, 0);
-        GLES20.glGenTextures(1, mFrameBufferTextureId, 0);
+        mFrameBuffer = new int[mMiddleWareProgram.length + 1];
+        mFrameBufferTextureId = new int[mMiddleWareProgram.length + 1];
+        for (int i = 0; i < mMiddleWareProgram.length + 1; i++) {
+            GLES20.glGenFramebuffers(1, mFrameBuffer, i);
+            GLES20.glGenTextures(1, mFrameBufferTextureId, i);
 
-        /**
-         * 创建一个空的2D纹理
-         */
-        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, mTextureSize.getWidth(), mTextureSize.getHeight(), 0,
-                GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
-        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D,
-                GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D,
-                GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
-        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D,
-                GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
-        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D,
-                GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+            /**
+             * 创建一个空的2D纹理
+             */
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFrameBufferTextureId[i]);
+            GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, mTextureSize.getWidth(), mTextureSize.getHeight(), 0,
+                    GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
+            GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D,
+                    GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+            GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D,
+                    GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+            GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D,
+                    GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+            GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D,
+                    GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
 
-        /**
-         * 挂载该纹理到FBO上
-         */
-        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBuffer[0]);
-        GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0,
-                GLES20.GL_TEXTURE_2D, mFrameBufferTextureId[0], 0);
+            /**
+             * 挂载该纹理到FBO上
+             */
+            GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBuffer[i]);
+            GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0,
+                    GLES20.GL_TEXTURE_2D, mFrameBufferTextureId[i], 0);
 
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
-        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+            GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+        }
 
         /**
          * 挂载中间件程序以及输出程序的纹理为该FBO关联的纹理，即从FBO上读取纹理
          */
-        for (TextureGLProgram glProgram : mMiddleWareProgram) {
-            glProgram.texture()[0] = mFrameBufferTextureId[0];
+        for (int i = 0; i < mMiddleWareProgram.length; i++) {
+            mMiddleWareProgram[i].texture()[0] = mFrameBufferTextureId[i];
         }
-        mOutputProgram.texture()[0] = mFrameBufferTextureId[0];
+        mOutputProgram.texture()[0] = mFrameBufferTextureId[mFrameBufferTextureId.length - 1];
 
         /**
          * 编译所有gl程序
@@ -87,10 +90,12 @@ public class FBOGroupGLProgram implements GLProgram {
     public void drawFrame() {
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBuffer[0]);
         mInputProgram.drawFrame();
-        for (GLProgram glProgram : mMiddleWareProgram) {
-            glProgram.drawFrame();
-        }
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+        for (int i = 0; i < mMiddleWareProgram.length; i++) {
+            GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBuffer[i + 1]);
+            mMiddleWareProgram[i].drawFrame();
+            GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+        }
         mOutputProgram.drawFrame();
     }
 

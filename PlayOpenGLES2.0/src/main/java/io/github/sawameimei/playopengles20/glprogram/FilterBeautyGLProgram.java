@@ -1,30 +1,29 @@
 package io.github.sawameimei.playopengles20.glprogram;
 
 import android.content.Context;
-import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
-import android.opengl.GLUtils;
 import android.opengl.Matrix;
+import android.support.annotation.FloatRange;
 
 import java.lang.ref.WeakReference;
+import java.nio.FloatBuffer;
 
 import io.github.sawameimei.playopengles20.R;
 import io.github.sawameimei.playopengles20.common.GLUtil;
 import io.github.sawameimei.playopengles20.common.GLVertex;
 import io.github.sawameimei.playopengles20.common.RawResourceReader;
 import io.github.sawameimei.playopengles20.common.ShaderHelper;
-import io.github.sawameimei.playopengles20.common.TextureHelper;
 
 /**
- * Created by huangmeng on 2017/12/11.
+ * 美颜滤镜程序
+ * Created by huangmeng on 2017/12/21.
  */
-
-public class CameraPrevGLProgram implements TextureGLProgram {
+public class FilterBeautyGLProgram implements TextureGLProgram {
 
     private final WeakReference<Context> mContext;
 
-    private final FullRectangleCoords mFullRectangleCoords;
-    private final FullRectangleTextureCoords mFullRectangleTextureCoords;
+    private final FullRectangleTextureCoords mFullRectangleTextureCoords = new FullRectangleTextureCoords();
+    private final FullRectangleCoords mFullRectangleCoords = new FullRectangleCoords();
 
     private int mVertexShaderHandle;
     private int mFragmentShaderHandle;
@@ -34,42 +33,55 @@ public class CameraPrevGLProgram implements TextureGLProgram {
     private int maPositionLoc;
     private int maTextureCoordLoc;
     private int muTexMatrixLoc;
+    private int mvStepOffsetLoc;
+    private int mfLevelLoc;
 
     private int[] mTextureId = new int[1];
 
     private float[] mTextureM = GLUtil.getIdentityM();
     private float[] muPositionM = GLUtil.getIdentityM();
 
+    private float[] mStepOffset = new float[2];
+
+    private float mBeautyLevel = 1.0F;
+    private int msTextureLoc;
+
     {
-        Matrix.scaleM(muPositionM, 0, -1, 1, 1);
+        //Matrix.scaleM(muPositionM, 0, -1, 1, 1);
+        Matrix.rotateM(muPositionM, 0, 180F, 0, 0, 1);
     }
 
-    public CameraPrevGLProgram(Context context, float[] textureM) {
+    public FilterBeautyGLProgram(Context context, float[] textureM, int textureId, int textureWidth, int textureHeight) {
         this.mContext = new WeakReference<>(context);
         this.mTextureM = textureM;
-        mFullRectangleTextureCoords = new FullRectangleTextureCoords();
-        mFullRectangleCoords = new FullRectangleCoords();
-        mTextureId[0] = TextureHelper.loadOESTexture();
-    }
-
-    public CameraPrevGLProgram(Context context, float[] textureM, int textureId) {
-        this.mContext = new WeakReference<>(context);
-        this.mTextureM = textureM;
-        mFullRectangleTextureCoords = new FullRectangleTextureCoords();
-        mFullRectangleCoords = new FullRectangleCoords();
+        mStepOffset[0] = 2.0F / textureWidth;
+        mStepOffset[1] = 2.0F / textureHeight;
         mTextureId[0] = textureId;
+    }
+
+    public void setBeautyLevel(@FloatRange(from = 0, to = 1) float level) {
+        mBeautyLevel = 1.0F - (1.0F - 0.33F) * level;
+    }
+
+    public void setPreviewSize(int textureWidth, int textureHeight) {
+        mStepOffset[0] = 2.0F / textureWidth;
+        mStepOffset[1] = 2.0F / textureHeight;
     }
 
     @Override
     public void compileAndLink() {
-        mVertexShaderHandle = ShaderHelper.compileShader(GLES20.GL_VERTEX_SHADER, RawResourceReader.readTextFileFromRawResource(mContext.get(), R.raw.camera_preview_vertex_sharder));
-        mFragmentShaderHandle = ShaderHelper.compileShader(GLES20.GL_FRAGMENT_SHADER, RawResourceReader.readTextFileFromRawResource(mContext.get(), R.raw.camera_preview_fragment_sharder));
+        mVertexShaderHandle = ShaderHelper.compileShader(GLES20.GL_VERTEX_SHADER, RawResourceReader.readTextFileFromRawResource(mContext.get(), R.raw.filter_beauty_vertex_sharder));
+        mFragmentShaderHandle = ShaderHelper.compileShader(GLES20.GL_FRAGMENT_SHADER, RawResourceReader.readTextFileFromRawResource(mContext.get(), R.raw.filter_beauty_fragment_sharder));
         mProgramHandle = ShaderHelper.createAndLinkProgram(mVertexShaderHandle, mFragmentShaderHandle, new String[]{"aPosition", "aTextureCoord"});
 
         muMVPMatrixLoc = GLES20.glGetUniformLocation(mProgramHandle, "uMVPMatrix");
+        muTexMatrixLoc = GLES20.glGetUniformLocation(mProgramHandle, "uTexMatrix");
         maPositionLoc = GLES20.glGetAttribLocation(mProgramHandle, "aPosition");
         maTextureCoordLoc = GLES20.glGetAttribLocation(mProgramHandle, "aTextureCoord");
-        muTexMatrixLoc = GLES20.glGetUniformLocation(mProgramHandle, "uTexMatrix");
+
+        mvStepOffsetLoc = GLES20.glGetUniformLocation(mProgramHandle, "vStepOffset");
+        mfLevelLoc = GLES20.glGetUniformLocation(mProgramHandle, "fLevel");
+        msTextureLoc = GLES20.glGetUniformLocation(mProgramHandle, "sTexture");
     }
 
     @Override
@@ -78,7 +90,8 @@ public class CameraPrevGLProgram implements TextureGLProgram {
         GLUtil.checkGlError("glUseProgram");
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, mTextureId[0]);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureId[0]);
+        GLES20.glUniform1i(msTextureLoc, 0);
         GLUtil.checkGlError("glBindTexture:mTextureHandle");
 
         GLES20.glUniformMatrix4fv(muMVPMatrixLoc, 1, false, muPositionM, 0);
@@ -86,6 +99,12 @@ public class CameraPrevGLProgram implements TextureGLProgram {
 
         GLES20.glUniformMatrix4fv(muTexMatrixLoc, 1, false, mTextureM, 0);
         GLUtil.checkGlError("glUniformMatrix4fv:muTexMatrixLoc");
+
+        GLES20.glUniform2fv(mvStepOffsetLoc, 1, FloatBuffer.wrap(mStepOffset));
+        GLUtil.checkGlError("glUniform2fv:mvStepOffsetLoc");
+
+        GLES20.glUniform1f(mfLevelLoc, mBeautyLevel);
+        GLUtil.checkGlError("glUniform1f:mfLevelLoc");
 
         GLES20.glVertexAttribPointer(maPositionLoc, mFullRectangleCoords.getSize(), GLES20.GL_FLOAT, false, mFullRectangleCoords.getStride(), mFullRectangleCoords.toByteBuffer().position(0));
         GLES20.glEnableVertexAttribArray(maPositionLoc);
@@ -100,20 +119,10 @@ public class CameraPrevGLProgram implements TextureGLProgram {
 
         GLES20.glDisableVertexAttribArray(maPositionLoc);
         GLES20.glDisableVertexAttribArray(maTextureCoordLoc);
-
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0);
-
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
         GLES20.glUseProgram(0);
         GLUtil.checkGlError("disable");
     }
-
-    public TextureGLProgram rotate(float angle) {
-        muPositionM = GLUtil.getIdentityM();
-        Matrix.rotateM(muPositionM, 0, angle, 0, 0, 1);
-        return this;
-    }
-
 
     @Override
     public void release() {

@@ -73,7 +73,7 @@ public class OpenGLES20L4Activity extends AppCompatActivity implements SurfaceTe
         File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/audio/");
         file.mkdirs();
         try {
-            recordingFile = File.createTempFile("recordingL4", ".mp4", file);
+            recordingFile = File.createTempFile(getClass().getSimpleName(), ".mp4", file);
             Log.e(TAG, "filePath:" + recordingFile.getAbsolutePath());
         } catch (Exception e) {
             e.printStackTrace();
