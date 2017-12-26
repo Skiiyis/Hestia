@@ -59,7 +59,11 @@ http://blog.csdn.net/x_iya/article/details/52495824
 
 12. 学习 Android 图形图像架构，能够使用 GLSurfaceviw 绘制 Camera 预览画面
 
-13. 深入研究音视频相关的网络协议，如 rtmp，hls，以及封包格式，如：flv，mp4
+13. 深入研究音视频相关的网络协议，如 rtmp，hls，rtsp ，以及封包格式，如：flv，mp4
+
+```
+http://blog.csdn.net/leixiaohua1020/article/details/11704355
+```
 
 14. 深入学习一些音视频领域的开源项目，如 webrtc，ffmpeg，ijkplayer，librtmp 等等
 
@@ -74,5 +78,9 @@ http://ffmpeg.org/doxygen/trunk/examples.html
 16. 将 x264 库移植到 Android 平台，结合上面积累的经验，完成视频数据 H264 软编功能
 
 17. 将 librtmp 库移植到 Android 平台，结合上面积累的经验，完成 Android RTMP 推流功能
+
+```
+http://blog.csdn.net/lmj623565791/article/details/77937483
+```
 
 18. 上面积累的经验，做一款短视频 APP，完成如：断点拍摄、添加水印、本地转码、视频剪辑、视频拼接、MV 特效等功能
