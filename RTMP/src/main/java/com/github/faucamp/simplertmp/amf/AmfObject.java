@@ -1,22 +1,27 @@
 package com.github.faucamp.simplertmp.amf;
 
+import com.github.faucamp.simplertmp.Logger;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * AMF object
- * 
+ *
  * @author francois
  */
 public class AmfObject implements AmfData {
 
     protected Map<String, AmfData> properties = new LinkedHashMap<String, AmfData>();
     protected int size = -1;
-    /** Byte sequence that marks the end of an AMF object */
+    /**
+     * Byte sequence that marks the end of an AMF object
+     */
     protected static final byte[] OBJECT_END_MARKER = new byte[]{0x00, 0x00, 0x09};
 
     public AmfObject() {
@@ -105,5 +110,23 @@ public class AmfObject implements AmfData {
 
         }
         return size;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        Set<Map.Entry<String, AmfData>> set = properties.entrySet();
+        for (Map.Entry<String, AmfData> dataEntry : set) {
+            AmfData value = dataEntry.getValue();
+            if (value instanceof AmfNumber) {
+                sb.append(dataEntry.getKey()).append(":").append(((AmfNumber) value).getValue()).append("\n");
+                continue;
+            }
+            if (value instanceof AmfString) {
+                sb.append(dataEntry.getKey()).append(":").append(((AmfString) value).getValue()).append("\n");
+                continue;
+            }
+        }
+        return sb.toString();
     }
 }

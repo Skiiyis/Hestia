@@ -70,6 +70,6 @@ public class Data extends VariableBodyRtmpPacket {
 
     @Override
     public String toString() {
-        return "RTMP Data (type：" + type + "）";
+        return "RTMP Data (type：" + type + "，streamId: " + getHeader().getMessageStreamId() + "）";
     }
 }

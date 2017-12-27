@@ -1,6 +1,7 @@
 package io.github.sawameimei.rtmp;
 
 import com.github.faucamp.simplertmp.Logger;
+import com.github.faucamp.simplertmp.amf.AmfData;
 import com.github.faucamp.simplertmp.amf.AmfNumber;
 import com.github.faucamp.simplertmp.amf.AmfObject;
 import com.github.faucamp.simplertmp.amf.AmfString;
@@ -168,7 +169,7 @@ public class RtmpCollector extends RtmpConnection {
 
     private void handlePacket() throws IOException {
         RtmpPacket rtmpPacket = readPacket();
-        if(rtmpPacket == null){
+        if (rtmpPacket == null) {
             return;
         }
         switch (rtmpPacket.getHeader().getMessageType()) {
@@ -213,6 +214,11 @@ public class RtmpCollector extends RtmpConnection {
                 if ("onMetaData".equals(data.getType())) {
                     //rtmpStreamWriter.write(data);
                     Logger.d(TAG, data.toString());
+                    List<AmfData> metaData = data.getData();
+                    for (AmfData metaDatum : metaData) {
+                        AmfObject metaObj = (AmfObject) metaDatum;
+                        Logger.d(TAG, "onMetaData\n" + metaObj.toString());
+                    }
                 }
                 break;
             }
