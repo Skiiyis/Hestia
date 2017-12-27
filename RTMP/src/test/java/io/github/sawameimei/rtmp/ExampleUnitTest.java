@@ -17,7 +17,7 @@ public class ExampleUnitTest {
 
     @Test
     public void testConnect() throws Exception {
-        new RtmpCollector("rtmp://www.bj-mobiletv.com:8000/live/live1")
+        new RtmpCollector("rtmp://192.168.1.149/live/live")
                 .connect()
                 .createStream(null)
                 .makeCurrent()

@@ -51,6 +51,6 @@ public abstract class ContentData extends RtmpPacket {
 
     @Override
     public int size() {
-        return size;
+        return data.length;
     }
 }

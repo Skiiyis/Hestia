@@ -81,14 +81,24 @@ public class RtmpCollector extends RtmpConnection {
         return this;
     }
 
-    public RtmpCollector playFile() {
+    public RtmpCollector playFile() throws IOException {
         checkConnected();
         checkStream();
         try {
             sendRtmpPacket(CommandEnum.play(transactionCounter, currentSteamId, streamName, false));
+
+            final ChunkStreamInfo chunkStreamInfo = rtmpSessionInfo.getChunkStreamInfo(ChunkStreamInfo.RTMP_CID_PROTOCOL_CONTROL);
+            UserControl userControl2 = new UserControl(UserControl.Type.SET_BUFFER_LENGTH, chunkStreamInfo);
+            userControl2.setEventData(currentSteamId, 5000);
+            sendRtmpPacket(userControl2);
             Logger.d(TAG, "playFile(): send play packet，streamName=" + streamName + "，streamId = " + currentSteamId + "，transactionId=" + transactionCounter);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+
+        handlePacket = true;
+        while (handlePacket) {
+            handlePacket();
         }
         return this;
     }
@@ -101,6 +111,11 @@ public class RtmpCollector extends RtmpConnection {
         handlePacket = true;
         try {
             sendRtmpPacket(CommandEnum.play(transactionCounter, currentSteamId, streamName, true));
+
+            final ChunkStreamInfo chunkStreamInfo = rtmpSessionInfo.getChunkStreamInfo(ChunkStreamInfo.RTMP_CID_PROTOCOL_CONTROL);
+            UserControl userControl2 = new UserControl(UserControl.Type.SET_BUFFER_LENGTH, chunkStreamInfo);
+            userControl2.setEventData(currentSteamId, 5000);
+            sendRtmpPacket(userControl2);
             Logger.d(TAG, "playLive(): send play packet，streamName=" + streamName + "，streamId = " + currentSteamId + "，transactionId=" + transactionCounter);
         } catch (IOException e) {
             e.printStackTrace();
@@ -153,6 +168,9 @@ public class RtmpCollector extends RtmpConnection {
 
     private void handlePacket() throws IOException {
         RtmpPacket rtmpPacket = readPacket();
+        if(rtmpPacket == null){
+            return;
+        }
         switch (rtmpPacket.getHeader().getMessageType()) {
             case ABORT:
                 rtmpSessionInfo.getChunkStreamInfo(((Abort) rtmpPacket).getChunkStreamId()).clearStoredChunks();
@@ -170,6 +188,7 @@ public class RtmpCollector extends RtmpConnection {
                     case STREAM_EOF:
                         Logger.d(TAG, "handlePacket(): Stream EOF reached, closing RTMP writer...");
                         //rtmpStreamWriter.close();
+                        handlePacket = false;
                         break;
                 }
                 break;
@@ -183,8 +202,10 @@ public class RtmpCollector extends RtmpConnection {
             case COMMAND_AMF0:
                 Command command = (Command) rtmpPacket;
                 if ("onStatus".equals(command.getCommandName())) {
-                    String code = ((AmfString) ((AmfObject) command.getData().get(1)).getProperty("code")).getValue();
-                    Logger.d(TAG, "handlePacket(): command code: " + code);
+                    AmfObject amfObject = (AmfObject) command.getData().get(1);
+                    String code = ((AmfString) amfObject.getProperty("code")).getValue();
+                    String description = ((AmfString) amfObject.getProperty("description")).getValue();
+                    Logger.d(TAG, "handlePacket(): command code: " + code + "，description：" + description);
                 }
                 break;
             case DATA_AMF0: {
@@ -196,8 +217,10 @@ public class RtmpCollector extends RtmpConnection {
                 break;
             }
             case AUDIO:
+                Logger.d(TAG, "handlePacket(): audio timeStamp:" + rtmpPacket.getHeader().getAbsoluteTimestamp() + "，contentDataLength:" + ((ContentData) rtmpPacket).size());
+                break;
             case VIDEO:
-                Logger.d(TAG, "handlePacket(): timeStamp:" + rtmpPacket.getHeader().getAbsoluteTimestamp() + "，contentDataLength:" + ((ContentData) rtmpPacket).size());
+                Logger.d(TAG, "handlePacket(): video timeStamp:" + rtmpPacket.getHeader().getAbsoluteTimestamp() + "，contentDataLength:" + ((ContentData) rtmpPacket).size());
                 break;
             case SET_CHUNK_SIZE:
                 break;

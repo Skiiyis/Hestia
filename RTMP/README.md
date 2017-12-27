@@ -6,6 +6,8 @@ https://github.com/faucamp/SimpleRtmp
 
 LibRTMP C/ C++ 实现
 http://blog.csdn.net/leixiaohua1020/article/details/15814587
+
+使用FFMpeg实现
 ```
 
 rtmp协议通信流程
