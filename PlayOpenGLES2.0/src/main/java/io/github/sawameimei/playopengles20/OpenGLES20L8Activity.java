@@ -2,43 +2,29 @@ package io.github.sawameimei.playopengles20;
 
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
-import android.opengl.EGL14;
-import android.opengl.EGLContext;
 import android.opengl.EGLSurface;
 import android.opengl.GLES20;
-import android.opengl.Matrix;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.Size;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import io.github.sawameimei.playopengles20.common.CameraUtil;
-import io.github.sawameimei.playopengles20.common.EGLCore;
-import io.github.sawameimei.playopengles20.common.MP4Encoder;
-import io.github.sawameimei.playopengles20.common.TextureHelper;
+import io.github.sawameimei.opengleslib.common.EGLCore;
+import io.github.sawameimei.opengleslib.common.TextureHelper;
+import io.github.sawameimei.opengleslib.glprogram.FBOGroupGLProgram;
+import io.github.sawameimei.opengleslib.glprogram.GLProgram;
 import io.github.sawameimei.playopengles20.glprogram.CameraPrevGLProgram;
-import io.github.sawameimei.playopengles20.glprogram.CameraPreviewWriteSkinGLProgram;
-import io.github.sawameimei.playopengles20.glprogram.FBOGroupGLProgram;
+import io.github.sawameimei.playopengles20.glprogram.CameraUtil;
 import io.github.sawameimei.playopengles20.glprogram.FilterBeautyGLProgram;
 import io.github.sawameimei.playopengles20.glprogram.FilterWriteSkinGLProgram;
-import io.github.sawameimei.playopengles20.glprogram.GLProgram;
-import io.github.sawameimei.playopengles20.glprogram.TextureGLProgram;
 
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.INTERNET;

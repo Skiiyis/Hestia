@@ -1,4 +1,4 @@
-package io.github.sawameimei.playopengles20.common;
+package io.github.sawameimei.playopengles20;
 
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
@@ -14,8 +14,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import static io.github.sawameimei.playopengles20.common.MP4Encoder.EncoderThread.ENCODER;
-import static io.github.sawameimei.playopengles20.common.MP4Encoder.EncoderThread.END;
+import static io.github.sawameimei.playopengles20.MP4Encoder.EncoderThread.ENCODER;
+import static io.github.sawameimei.playopengles20.MP4Encoder.EncoderThread.END;
+
 
 /**
  * Created by huangmeng on 2017/11/28.

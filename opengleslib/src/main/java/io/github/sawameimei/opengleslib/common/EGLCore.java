@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.github.sawameimei.playopengles20.common;
+package io.github.sawameimei.opengleslib.common;
 
 import android.graphics.SurfaceTexture;
 import android.opengl.EGL14;

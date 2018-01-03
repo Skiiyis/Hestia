@@ -13,8 +13,8 @@ import java.nio.FloatBuffer;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import io.github.sawameimei.playopengles20.common.RawResourceReader;
-import io.github.sawameimei.playopengles20.common.ShaderHelper;
+import io.github.sawameimei.opengleslib.common.RawResourceReader;
+import io.github.sawameimei.opengleslib.common.ShaderHelper;
 
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
 import static android.opengl.GLES20.GL_DEPTH_BUFFER_BIT;

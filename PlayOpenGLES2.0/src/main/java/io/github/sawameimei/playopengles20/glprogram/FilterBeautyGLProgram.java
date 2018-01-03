@@ -8,11 +8,12 @@ import android.support.annotation.FloatRange;
 import java.lang.ref.WeakReference;
 import java.nio.FloatBuffer;
 
+import io.github.sawameimei.opengleslib.glprogram.TextureGLProgram;
 import io.github.sawameimei.playopengles20.R;
-import io.github.sawameimei.playopengles20.common.GLUtil;
-import io.github.sawameimei.playopengles20.common.GLVertex;
-import io.github.sawameimei.playopengles20.common.RawResourceReader;
-import io.github.sawameimei.playopengles20.common.ShaderHelper;
+import io.github.sawameimei.opengleslib.common.GLUtil;
+import io.github.sawameimei.opengleslib.common.GLVertex;
+import io.github.sawameimei.opengleslib.common.RawResourceReader;
+import io.github.sawameimei.opengleslib.common.ShaderHelper;
 
 /**
  * 美颜滤镜程序
@@ -59,8 +60,9 @@ public class FilterBeautyGLProgram implements TextureGLProgram {
         mTextureId[0] = textureId;
     }
 
-    public void setBeautyLevel(@FloatRange(from = 0, to = 1) float level) {
+    public TextureGLProgram setBeautyLevel(@FloatRange(from = 0, to = 1) float level) {
         mBeautyLevel = 1.0F - (1.0F - 0.33F) * level;
+        return this;
     }
 
     public void setPreviewSize(int textureWidth, int textureHeight) {

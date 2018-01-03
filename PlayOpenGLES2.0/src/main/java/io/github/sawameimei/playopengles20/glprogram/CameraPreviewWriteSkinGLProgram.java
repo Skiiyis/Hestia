@@ -8,12 +8,13 @@ import android.opengl.Matrix;
 import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 
+import io.github.sawameimei.opengleslib.glprogram.TextureGLProgram;
 import io.github.sawameimei.playopengles20.R;
-import io.github.sawameimei.playopengles20.common.GLUtil;
-import io.github.sawameimei.playopengles20.common.GLVertex;
-import io.github.sawameimei.playopengles20.common.RawResourceReader;
-import io.github.sawameimei.playopengles20.common.ShaderHelper;
-import io.github.sawameimei.playopengles20.common.TextureHelper;
+import io.github.sawameimei.opengleslib.common.GLUtil;
+import io.github.sawameimei.opengleslib.common.GLVertex;
+import io.github.sawameimei.opengleslib.common.RawResourceReader;
+import io.github.sawameimei.opengleslib.common.ShaderHelper;
+import io.github.sawameimei.opengleslib.common.TextureHelper;
 
 /**
  * Created by huangmeng on 2017/12/20.

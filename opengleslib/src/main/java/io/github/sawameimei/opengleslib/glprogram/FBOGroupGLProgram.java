@@ -1,7 +1,6 @@
-package io.github.sawameimei.playopengles20.glprogram;
+package io.github.sawameimei.opengleslib.glprogram;
 
 import android.opengl.GLES20;
-import android.support.annotation.NonNull;
 import android.util.Size;
 
 /**
@@ -13,13 +12,29 @@ public class FBOGroupGLProgram implements GLProgram {
     private final GLProgram mInputProgram;
     private final TextureGLProgram mOutputProgram;
     private final TextureGLProgram mMiddleWareProgram[];
-    private Size mTextureSize;
+    private final int mViewportWidth;
+    private final int mViewportHeight;
+    private final int mInputTextureWidth;
+    private final int mInputTextureHeight;
 
     private int[] mFrameBufferTextureId;
     private int[] mFrameBuffer;
 
-    public FBOGroupGLProgram(@NonNull Size textureSize, @NonNull GLProgram inputProgram, @NonNull TextureGLProgram outputProgram, TextureGLProgram... middleWareProgram) {
-        this.mTextureSize = textureSize;
+    public FBOGroupGLProgram(Size textureSize, GLProgram inputProgram, TextureGLProgram outputProgram, TextureGLProgram... middleWareProgram) {
+        this.mInputTextureWidth = textureSize.getWidth();
+        this.mInputTextureHeight = textureSize.getHeight();
+        this.mViewportWidth = mInputTextureWidth;
+        this.mViewportHeight = mInputTextureHeight;
+        this.mInputProgram = inputProgram;
+        this.mOutputProgram = outputProgram;
+        this.mMiddleWareProgram = middleWareProgram;
+    }
+
+    public FBOGroupGLProgram(int viewportWidth, int viewportHeight, int inputTextureWidth, int inputTextureHeight, GLProgram inputProgram, TextureGLProgram outputProgram, TextureGLProgram... middleWareProgram) {
+        this.mViewportWidth = viewportWidth;
+        this.mViewportHeight = viewportHeight;
+        this.mInputTextureWidth = inputTextureWidth;
+        this.mInputTextureHeight = inputTextureHeight;
         this.mInputProgram = inputProgram;
         this.mOutputProgram = outputProgram;
         this.mMiddleWareProgram = middleWareProgram;
@@ -40,7 +55,7 @@ public class FBOGroupGLProgram implements GLProgram {
              * 创建一个空的2D纹理
              */
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFrameBufferTextureId[i]);
-            GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, mTextureSize.getWidth(), mTextureSize.getHeight(), 0,
+            GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, mInputTextureWidth, mInputTextureHeight, 0,
                     GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
             GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D,
                     GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
@@ -88,6 +103,7 @@ public class FBOGroupGLProgram implements GLProgram {
      */
     @Override
     public void drawFrame() {
+        GLES20.glViewport(0, 0, mInputTextureWidth, mInputTextureHeight);
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBuffer[0]);
         mInputProgram.drawFrame();
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
@@ -96,6 +112,7 @@ public class FBOGroupGLProgram implements GLProgram {
             mMiddleWareProgram[i].drawFrame();
             GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
         }
+        GLES20.glViewport(0, 0, mViewportWidth, mViewportHeight);
         mOutputProgram.drawFrame();
     }
 

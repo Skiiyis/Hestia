@@ -55,6 +55,15 @@ http://blog.csdn.net/x_iya/article/details/52495824
 //http://blog.csdn.net/csxiaoshui/article/details/53082141
 //https://github.com/wuhaoyu1990/MagicCamera.git
 //https://github.com/aiyaapp/AiyaEffectsAndroid
+
+人脸检测
+https://www.jianshu.com/p/298e79dc346c
+https://docs.opencv.org/3.4.0/examples.html openCV Samples
+http://blog.csdn.net/q4878802/article/details/51841793
+https://docs.opencv.org/2.4/doc/tutorials/introduction/android_binary_package/O4A_SDK.html
+http://blog.csdn.net/u013895206/article/details/52671550
+https://github.com/SouvDc/face-detection
+http://blog.csdn.net/yanzi1225627/article/details/38098729/
 ```
 
 12. 学习 Android 图形图像架构，能够使用 GLSurfaceviw 绘制 Camera 预览画面

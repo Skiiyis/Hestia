@@ -23,12 +23,10 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
 
-import io.github.sawameimei.playopengles20.common.CameraUtil;
-import io.github.sawameimei.playopengles20.common.EGLCore;
-import io.github.sawameimei.playopengles20.common.MP4Encoder;
-import io.github.sawameimei.playopengles20.glprogram.CameraPrevGLProgram;
+import io.github.sawameimei.opengleslib.common.EGLCore;
+import io.github.sawameimei.opengleslib.glprogram.GLProgram;
 import io.github.sawameimei.playopengles20.glprogram.CameraPreviewBeautyGLProgram;
-import io.github.sawameimei.playopengles20.glprogram.GLProgram;
+import io.github.sawameimei.playopengles20.glprogram.CameraUtil;
 
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.INTERNET;

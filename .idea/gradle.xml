@@ -17,6 +17,7 @@
             <option value="$PROJECT_DIR$/StudyFFmpeg" />
             <option value="$PROJECT_DIR$/UseCamera" />
             <option value="$PROJECT_DIR$/ffmpeg" />
+            <option value="$PROJECT_DIR$/opengleslib" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

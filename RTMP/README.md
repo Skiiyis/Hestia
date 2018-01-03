@@ -36,7 +36,7 @@ http://blog.csdn.net/bsplover/article/details/7426511
 http://blog.csdn.net/mm792261167/article/details/69396493
 
 FlvTag video payload/RTMP video payload的内容是什么？
-?去除掉同步字的h264 NALU??
+??去除掉同步字的h264 NALU??
 
 RTMP延迟？
 https://zhuanlan.zhihu.com/p/24606221

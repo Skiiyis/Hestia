@@ -46,6 +46,10 @@
             android:name=".OpenGLES20L8Activity"
             android:label="多滤镜混合预览" />
 
+        <activity
+            android:name=".OpenGLES20L9Activity"
+            android:label="预览 人脸检测" />
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

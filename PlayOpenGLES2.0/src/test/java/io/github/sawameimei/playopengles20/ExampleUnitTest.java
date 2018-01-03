@@ -1,8 +1,6 @@
 package io.github.sawameimei.playopengles20;
 
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import android.opengl.Matrix;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -10,8 +8,14 @@ import static org.junit.Assert.*;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 public class ExampleUnitTest {
-    @Test
-    public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
+
+    public void matrixTest() throws Exception {
+        float[] identityM = new float[16];
+        Matrix.setIdentityM(identityM, 0);
+
+    }
+
+    private void printMatrix(float[] m, int line) {
+
     }
 }

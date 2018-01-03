@@ -1,4 +1,4 @@
-package io.github.sawameimei.playopengles20.common;
+package io.github.sawameimei.opengleslib.common;
 
 /**
  * Created by huangmeng on 2017/11/24.

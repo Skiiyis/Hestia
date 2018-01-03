@@ -1,4 +1,4 @@
-package io.github.sawameimei.playopengles20.common;
+package io.github.sawameimei.opengleslib.common;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
