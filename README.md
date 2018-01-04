@@ -1,95 +1,55 @@
-作者：卢俊
-链接：https://zhuanlan.zhihu.com/p/28518637
-来源：知乎
-著作权归作者所有，转载请联系作者获得授权。
+Hestia -- some samples for MultimediaStudy
+=====================
+**Hestia**是一个Android下的音视频的学习项目Sample,实现了音视频学习中的一些关键技术，
+由于是学习项目，比较匆忙还有很多漏洞，包括但不限于 内存泄漏，退出崩溃等。
+后续学习完所有的学习内容后会整理并开发一个完整的音视频项目
 
-1. 在 Android 平台绘制一张图片，使用至少 3 种不同的 API，ImageView，SurfaceView，自定义 View
 
-2. 在 Android 平台使用 AudioRecord 和 AudioTrack API 完成音频 PCM 数据的采集和播放，并实现读写音频 wav 文件
 
-3. 在 Android 平台使用 Camera API 进行视频的采集，分别使用 SurfaceView、TextureView 来预览 Camera 数据，取到 NV21 的数据回调
+已完成的内容项
+-------
 
-```
-http://www.jianshu.com/p/631a6e971f15#
-```
+- [x] 使用三种方式绘制一张图片.
+- [x] 使用AudioRecord和AudioTrack完成录音.
+- [x] 使用VideoRecord和Camera完成录像.
+- [x] 使用 SurfaceView、TextureView 来预览 Camera 数据，并取到 NV21 的数据回调.
+- [x] 使用MediaExtractor 和 MediaMuxer，来完成对mp4文件的硬编硬解.
+- [x] 学习使用OpenGL ES 1.0和2.0.
+- [x] 使用MediaCodec完成对AAC和H.264的硬编硬解.
+- [x] 使用OpenGL ES 2.0完成Camera数据的预览.
+- [x] 使用FFmpeg完成mp4文件的软编软解.
+- [x] 使用OpenGL ES 2.0完成图像滤镜，并完成多滤镜叠加效果.
+- [x] 使用OpenGL ES 2.0的FBO(FrameBufferObject)提升读取图像速度.
+- [x] 使用Camera自带的人脸识别完成人脸识别并将结果绘制到预览界面.
+- [x] 学习RTMP协议并完成RTMP传输过程(Test).
 
-4. 学习 Android 平台的 MediaExtractor 和 MediaMuxer API，知道如何解析和封装 mp4 文件
 
-```
-http://www.cnblogs.com/jiy-for-you/p/7282033.html
-http://blog.csdn.net/zhi184816/article/details/
-http://www.jianshu.com/p/d26e7d788c0e
-```
 
-5. 学习 Android 平台 OpenGL ES API，了解 OpenGL 开发的基本流程，使用 OpenGL 绘制一个三角形
 
-```
-http://blog.csdn.net/jason0539/article/details/9164885
-http://www.guidebee.info/download/android/opengles/Android_OpenGL_ES_book.pdf
-https://developer.android.com/guide/topics/graphics/opengl.html
-https://github.com/learnopengles/Learn-OpenGLES-Tutorials.git
-```
+未完成的内容项
+-------
+- [ ] 音频处理.
+- [ ] 音视频同步.
+- [ ] 视频码率控制.
+- [ ] 其他流媒体协议的学习.
 
-6. 学习 Android 平台 OpenGL ES API，学习纹理绘制，能够使用 OpenGL 显示一张图片
 
-7. 学习 MediaCodec API，完成音频 AAC 硬编、硬解
 
-8. 学习 MediaCodec API，完成视频 H.264 的硬编、硬解
+感谢
+------
+- [学习路线](https://zhuanlan.zhihu.com/p/28518637)
+- [Grafika](https://github.com/google/grafika)
+- [MagicCamera](https://github.com/wuhaoyu1990/MagicCamera.git)
+- [雷神的博客](http://blog.csdn.net/leixiaohua1020/article/details)
+- [OpenGLES 入门](https://github.com/learnopengles/Learn-OpenGLES-Tutorials)
+- [Yasea](https://github.com/begeekmyfriend/yasea)
 
-```
-https://github.com/saki4510t/AudioVideoRecordingSample
-http://blog.csdn.net/angcyo/article/details/51043367
-https://github.com/google/grafika
-//硬解播放的时候会加速？解析帧数和播放帧数不一致导致 dts pts
-http://blog.csdn.net/x_iya/article/details/52495824
-```
 
-9. 串联整个音视频录制流程，完成音视频的采集、编码、封包成 mp4 输出
 
-10. 串联整个音视频播放流程，完成 mp4 的解析、音视频的解码、播放和渲染
+欢迎一起学习
+------
+联系我 673726491@qq.com
 
-11. 进一步学习 OpenGL，了解如何实现视频的剪裁、旋转、水印、滤镜，并学习 OpenGL 高级特性，如：VBO，IBO，VAO，FBO 等等
 
-```
-//http://blog.csdn.net/oshunz?viewmode=contents
-//http://blog.csdn.net/csxiaoshui/article/details/53082141
-//https://github.com/wuhaoyu1990/MagicCamera.git
-//https://github.com/aiyaapp/AiyaEffectsAndroid
 
-人脸检测
-https://www.jianshu.com/p/298e79dc346c
-https://docs.opencv.org/3.4.0/examples.html openCV Samples
-http://blog.csdn.net/q4878802/article/details/51841793
-https://docs.opencv.org/2.4/doc/tutorials/introduction/android_binary_package/O4A_SDK.html
-http://blog.csdn.net/u013895206/article/details/52671550
-https://github.com/SouvDc/face-detection
-http://blog.csdn.net/yanzi1225627/article/details/38098729/
-```
 
-12. 学习 Android 图形图像架构，能够使用 GLSurfaceviw 绘制 Camera 预览画面
-
-13. 深入研究音视频相关的网络协议，如 rtmp，hls，rtsp ，以及封包格式，如：flv，mp4
-
-```
-http://blog.csdn.net/leixiaohua1020/article/details/11704355
-```
-
-14. 深入学习一些音视频领域的开源项目，如 webrtc，ffmpeg，ijkplayer，librtmp 等等
-
-```
-http://ffmpeg.org/doxygen/trunk/examples.html
-//ffmpeg软编流程图
-![ffmpeg软编流程图](http://img.blog.csdn.net/20140929220326509?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
-```
-
-15. 将 ffmpeg 库移植到 Android 平台，结合上面积累的经验，编写一款简易的音视频播放器
-
-16. 将 x264 库移植到 Android 平台，结合上面积累的经验，完成视频数据 H264 软编功能
-
-17. 将 librtmp 库移植到 Android 平台，结合上面积累的经验，完成 Android RTMP 推流功能
-
-```
-http://blog.csdn.net/lmj623565791/article/details/77937483
-```
-
-18. 上面积累的经验，做一款短视频 APP，完成如：断点拍摄、添加水印、本地转码、视频剪辑、视频拼接、MV 特效等功能
