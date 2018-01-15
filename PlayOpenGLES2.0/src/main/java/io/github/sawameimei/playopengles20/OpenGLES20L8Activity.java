@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.github.sawameimei.opengleslib.common.EGLCore;
+import io.github.sawameimei.opengleslib.common.GLUtil;
 import io.github.sawameimei.opengleslib.common.TextureHelper;
 import io.github.sawameimei.opengleslib.glprogram.FBOGroupGLProgram;
 import io.github.sawameimei.opengleslib.glprogram.GLProgram;
@@ -115,27 +116,27 @@ public class OpenGLES20L8Activity extends AppCompatActivity implements SurfaceTe
 
     private void getGLValuePair(SurfaceHolder holder, EGLSurface eglSurface) {
         if (holder == mSurfaceView1.getHolder()) {
-            GLProgram glProgram = new CameraPrevGLProgram(getApplicationContext(), mTextureM, mTextureId).rotate(270);
+            GLProgram glProgram = new CameraPrevGLProgram(getApplicationContext(), mTextureM, mTextureId);
             glProgram.compileAndLink();
             mGLValuePair.add(new GLValuePair(eglSurface, glProgram));
         } else if (holder == mSurfaceView2.getHolder()) {
-            GLProgram inputGLProgram = new CameraPrevGLProgram(getApplicationContext(), mTextureM, mTextureId).rotate(270);
-            FilterBeautyGLProgram outputProgram = new FilterBeautyGLProgram(getApplicationContext(), mTextureM, mTextureId, PREV_WIDTH, PREV_HEIGHT);
+            GLProgram inputGLProgram = new CameraPrevGLProgram(getApplicationContext(), mTextureM, mTextureId);
+            FilterBeautyGLProgram outputProgram = new FilterBeautyGLProgram(getApplicationContext(), GLUtil.getIdentityM(), mTextureId, PREV_WIDTH, PREV_HEIGHT);
             outputProgram.setBeautyLevel(1);
             GLProgram glProgram = new FBOGroupGLProgram(new Size(mSurfaceView1.getMeasuredWidth(), mSurfaceView1.getMeasuredHeight()), inputGLProgram, outputProgram);
             glProgram.compileAndLink();
             mGLValuePair.add(new GLValuePair(eglSurface, glProgram));
         } else if (holder == mSurfaceView3.getHolder()) {
-            GLProgram inputGLProgram = new CameraPrevGLProgram(getApplicationContext(), mTextureM, mTextureId).rotate(270);
-            FilterWriteSkinGLProgram outputProgram = new FilterWriteSkinGLProgram(getApplicationContext(), mTextureM, mTextureId, PREV_WIDTH, PREV_HEIGHT);
+            GLProgram inputGLProgram = new CameraPrevGLProgram(getApplicationContext(), mTextureM, mTextureId);
+            FilterWriteSkinGLProgram outputProgram = new FilterWriteSkinGLProgram(getApplicationContext(), GLUtil.getIdentityM(), mTextureId, PREV_WIDTH, PREV_HEIGHT);
             GLProgram glProgram = new FBOGroupGLProgram(new Size(mSurfaceView1.getMeasuredWidth(), mSurfaceView1.getMeasuredHeight()), inputGLProgram, outputProgram);
             glProgram.compileAndLink();
             mGLValuePair.add(new GLValuePair(eglSurface, glProgram));
         } else {
-            GLProgram inputGLProgram = new CameraPrevGLProgram(getApplicationContext(), mTextureM, mTextureId).rotate(270);
-            FilterBeautyGLProgram middleWareProgram = new FilterBeautyGLProgram(getApplicationContext(), mTextureM, mTextureId, PREV_WIDTH, PREV_HEIGHT);
+            GLProgram inputGLProgram = new CameraPrevGLProgram(getApplicationContext(), mTextureM, mTextureId);
+            FilterBeautyGLProgram middleWareProgram = new FilterBeautyGLProgram(getApplicationContext(), GLUtil.getIdentityM(), mTextureId, PREV_WIDTH, PREV_HEIGHT);
             middleWareProgram.setBeautyLevel(1);
-            FilterWriteSkinGLProgram outputProgram = new FilterWriteSkinGLProgram(getApplicationContext(), mTextureM, mTextureId, PREV_WIDTH, PREV_HEIGHT);
+            FilterWriteSkinGLProgram outputProgram = new FilterWriteSkinGLProgram(getApplicationContext(), GLUtil.getIdentityM(), mTextureId, PREV_WIDTH, PREV_HEIGHT);
             GLProgram glProgram = new FBOGroupGLProgram(new Size(mSurfaceView1.getMeasuredWidth(), mSurfaceView1.getMeasuredHeight()), inputGLProgram, outputProgram, middleWareProgram);
             glProgram.compileAndLink();
             mGLValuePair.add(new GLValuePair(eglSurface, glProgram));

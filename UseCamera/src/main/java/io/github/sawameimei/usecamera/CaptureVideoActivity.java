@@ -85,6 +85,12 @@ public class CaptureVideoActivity extends AppCompatActivity implements View.OnCl
         Camera.Parameters parameters = fontCamera.getParameters();
         parameters.setPreviewFormat(ImageFormat.NV21);
         fontCamera.setParameters(parameters);
+        fontCamera.setPreviewCallback(new Camera.PreviewCallback() {
+            @Override
+            public void onPreviewFrame(byte[] data, Camera camera) {
+
+            }
+        });
         fontCamera.setOneShotPreviewCallback(new Camera.PreviewCallback() {
             @Override
             public void onPreviewFrame(byte[] data, Camera camera) {

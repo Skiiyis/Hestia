@@ -29,7 +29,7 @@ import io.github.sawameimei.playopengles20.R;
 public class FilterFaceDetectorGLProgram implements TextureGLProgram, Camera.FaceDetectionListener {
 
     private final WeakReference<Context> mContext;
-    private final float[] mTextureM;
+    private float[] mTextureM;
     private final int mPrevWidth;
     private final int mPrevHeight;
     private int[] inputTextureId = new int[1];
@@ -54,11 +54,6 @@ public class FilterFaceDetectorGLProgram implements TextureGLProgram, Camera.Fac
     private int muLeftEyePointCoordLoc;
     private int muRightEyePointCoordLoc;
     private int muMouthPointCoordLoc;
-
-    {
-        Matrix.scaleM(muPositionM, 0, -1, 1, 1);
-        Matrix.rotateM(muPositionM, 0, 180F, 0, 0, 1);
-    }
 
     public FilterFaceDetectorGLProgram(Context context, float[] textureM, int textureId, int prevWidth, int prevHeight) {
         this.mContext = new WeakReference<>(context);
@@ -144,7 +139,7 @@ public class FilterFaceDetectorGLProgram implements TextureGLProgram, Camera.Fac
             sb.append(",");
         }
         Log.e("textureM", sb.toString());*/
-        GLES20.glUniformMatrix4fv(muTexMatrixLoc, 1, false, mTextureM, 0);
+        GLES20.glUniformMatrix4fv(muTexMatrixLoc, 1, false, GLUtil.getIdentityM(), 0);
         GLUtil.checkGlError("glUniformMatrix4fv:muTexMatrixLoc");
 
         GLES20.glVertexAttribPointer(maPositionLoc, mFullRectangleCoords.getSize(), GLES20.GL_FLOAT, false, mFullRectangleCoords.getStride(), mFullRectangleCoords.toByteBuffer().position(0));
@@ -168,14 +163,14 @@ public class FilterFaceDetectorGLProgram implements TextureGLProgram, Camera.Fac
         /**
          * 使用FBO加速readPixels,readPixels的速度从200ms提升到8ms (wocao
          */
-        //long startTime = System.currentTimeMillis();
+        /*//long startTime = System.currentTimeMillis();
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBufferHandle[0]);
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, mFullRectangleCoords.getCount());
         GLES20.glReadPixels(0, 0, mPrevWidth, mPrevHeight, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, mPixelBuf);
         GLUtil.checkGlError("glDrawArrays");
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
         //long usedTime = System.currentTimeMillis() - startTime;
-        //Log.e("readPixel", "time:" + usedTime + ",width:" + mPrevWidth + ",height:" + mPrevHeight);
+        //Log.e("readPixel", "time:" + usedTime + ",width:" + mPrevWidth + ",height:" + mPrevHeight);*/
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, mFullRectangleCoords.getCount());
         GLUtil.checkGlError("glDrawArrays");
@@ -229,13 +224,46 @@ public class FilterFaceDetectorGLProgram implements TextureGLProgram, Camera.Fac
         long usedTime = System.currentTimeMillis() - mStartTime;
         Log.e("onFaceDetection", "usedTime:" + usedTime);
         mStartTime = System.currentTimeMillis();*/
+        /**
+         * 人脸识别点和textureM的关系？？？还有待考虑
+         */
+        /*if (faces.length > 0) {
+
+            Camera.Face face = faces[0];
+            float[] leftEeyM = new float[]{
+                    face.leftEye.x / 1000F, face.leftEye.y / 1000F, 0, 1F,
+            };
+            float[] rightEeyM = new float[]{
+                    face.rightEye.x / 1000F, face.rightEye.y / 1000F, 0, 1F,
+            };
+            float[] mouthM = new float[]{
+                    face.mouth.x / 1000F, face.mouth.y / 1000F, 0, 1F
+            };
+            mTextureM = new float[]{
+                    mTextureM[0], 0, 0, 0,
+                    0, mTextureM[5], 0, 0,
+                    0, 0, mTextureM[10], 0,
+                    0, 0, 0, mTextureM[15]
+            };
+            Matrix.rotateM(mTextureM, 0, 270, 0, 0, 1);
+            Matrix.multiplyMV(leftEeyM, 0, mTextureM, 0, leftEeyM, 0);
+            Matrix.multiplyMV(rightEeyM, 0, mTextureM, 0, rightEeyM, 0);
+            Matrix.multiplyMV(mouthM, 0, mTextureM, 0, mouthM, 0);
+
+            mLeftEye[0] = (1 + leftEeyM[0]) / 2;
+            mLeftEye[1] = (1 + leftEeyM[1]) / 2;
+            mRightEye[0] = (1 + rightEeyM[0]) / 2;
+            mRightEye[1] = (1 + rightEeyM[1]) / 2;
+            mMouth[0] = (1 + mouthM[0]) / 2;
+            mMouth[1] = (1 + mouthM[1]) / 2;
+        }*/
         for (int i = 0; i < faces.length; i++) {
             Camera.Face face = faces[i];
-            float leftX = 1.0F - (face.leftEye.x + 1000F) / 2000F;
+            float leftX = 1.0F * (face.leftEye.x + 1000F) / 2000F;
             float leftY = 1.0F - (face.leftEye.y + 1000F) / 2000F;
-            float rightX = 1.0F - (face.rightEye.x + 1000F) / 2000F;
+            float rightX = 1.0F * (face.rightEye.x + 1000F) / 2000F;
             float rightY = 1.0F - (face.rightEye.y + 1000F) / 2000F;
-            float mouthX = 1.0F - (face.mouth.x + 1000F) / 2000F;
+            float mouthX = 1.0F * (face.mouth.x + 1000F) / 2000F;
             float mouthY = 1.0F - (face.mouth.y + 1000F) / 2000F;
             mLeftEye[0] = leftY;
             mLeftEye[1] = leftX;
@@ -244,6 +272,12 @@ public class FilterFaceDetectorGLProgram implements TextureGLProgram, Camera.Fac
             mMouth[0] = mouthY;
             mMouth[1] = mouthX;
             //mPointCoords.add(rectCalculate(face.rect));
+            //Matrix.rotateM(mTextureM, 0, 270, 0, 0, 1);
+            ArrayList<Float> floats = new ArrayList<>();
+            for (float ele : mTextureM) {
+                floats.add(ele);
+            }
+            Log.e("mTextureM", floats.toString());
             Log.e("faceDetect", "leftEyes:" + leftX + "," + leftY +
                     ",rightEyes:" + rightX + "," + rightY +
                     ",mouth:" + mouthX + "," + mouthY);

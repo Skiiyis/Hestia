@@ -50,7 +50,7 @@ public class FilterWriteSkinGLProgram implements TextureGLProgram {
 
     {
         //Matrix.scaleM(muPositionM, 0, -1, 1, 1);
-        Matrix.rotateM(muPositionM, 0, 180F, 0, 0, 1);
+        //Matrix.rotateM(muPositionM, 0, 180F, 0, 0, 1);
     }
 
     public FilterWriteSkinGLProgram(Context context, float[] textureM, int textureId, int textureWidth, int textureHeight) {

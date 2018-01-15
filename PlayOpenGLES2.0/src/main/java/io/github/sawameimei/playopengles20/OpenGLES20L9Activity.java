@@ -14,6 +14,7 @@ import android.widget.Toast;
 import java.io.IOException;
 
 import io.github.sawameimei.opengleslib.common.EGLCore;
+import io.github.sawameimei.opengleslib.common.GLUtil;
 import io.github.sawameimei.opengleslib.common.TextureHelper;
 import io.github.sawameimei.opengleslib.glprogram.FBOGroupGLProgram;
 import io.github.sawameimei.opengleslib.glprogram.GLProgram;
@@ -87,7 +88,7 @@ public class OpenGLES20L9Activity extends AppCompatActivity implements SurfaceTe
                 PREV_HEIGHT = previewSize.height;
                 PREV_WIDTH = previewSize.width;
 
-                TextureGLProgram inputProgram = new CameraPrevGLProgram(getApplicationContext(), mTextureM, mTextureId).rotate(270);
+                TextureGLProgram inputProgram = new CameraPrevGLProgram(getApplicationContext(), mTextureM, mTextureId);
                 FilterFaceDetectorGLProgram middlewareProgram = new FilterFaceDetectorGLProgram(this, mTextureM, mTextureId, PREV_WIDTH, PREV_HEIGHT);
                 //TextureGLProgram outputProgram = new FilterBeautyGLProgram(this, mTextureM, mTextureId, PREV_WIDTH, PREV_HEIGHT).setBeautyLevel(1);
                 mGlProgram = new FBOGroupGLProgram(mContentView.getMeasuredWidth(), mContentView.getMeasuredHeight(), PREV_WIDTH, PREV_HEIGHT, inputProgram, /*outputProgram, */middlewareProgram);

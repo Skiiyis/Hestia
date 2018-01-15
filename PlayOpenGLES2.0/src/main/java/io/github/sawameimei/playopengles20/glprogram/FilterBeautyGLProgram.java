@@ -49,7 +49,7 @@ public class FilterBeautyGLProgram implements TextureGLProgram {
 
     {
         //Matrix.scaleM(muPositionM, 0, -1, 1, 1);
-        Matrix.rotateM(muPositionM, 0, 180F, 0, 0, 1);
+        //Matrix.rotateM(muPositionM, 0, 180F, 0, 0, 1);
     }
 
     public FilterBeautyGLProgram(Context context, float[] textureM, int textureId, int textureWidth, int textureHeight) {

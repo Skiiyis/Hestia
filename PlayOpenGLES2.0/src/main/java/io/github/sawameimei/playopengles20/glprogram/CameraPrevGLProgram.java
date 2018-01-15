@@ -1,6 +1,8 @@
 package io.github.sawameimei.playopengles20.glprogram;
 
 import android.content.Context;
+import android.opengl.EGL14;
+import android.opengl.EGLContext;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
@@ -41,7 +43,7 @@ public class CameraPrevGLProgram implements TextureGLProgram {
     private float[] muPositionM = GLUtil.getIdentityM();
 
     {
-        Matrix.scaleM(muPositionM, 0, -1, 1, 1);
+        Matrix.rotateM(muPositionM, 0, 270, 0, 0, 1);
     }
 
     public CameraPrevGLProgram(Context context, float[] textureM) {
