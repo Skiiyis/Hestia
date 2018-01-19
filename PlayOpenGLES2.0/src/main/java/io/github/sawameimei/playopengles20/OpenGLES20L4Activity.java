@@ -98,7 +98,7 @@ public class OpenGLES20L4Activity extends AppCompatActivity implements SurfaceTe
 
                 mPreviewSurface = mEGLCore.createWindowSurface(holder.getSurface());
                 mEGLCore.makeCurrent(mPreviewSurface);
-                mPrevProgram.compileAndLink();
+                mPrevProgram.compile();
 
                 try {
                     mCamera = CameraUtil.prevCamera(Camera.CameraInfo.CAMERA_FACING_FRONT, mPrevSurfaceTexture, ENCODER_WIDTH, ENCODER_HEIGHT, PREV_FPS);
@@ -135,13 +135,13 @@ public class OpenGLES20L4Activity extends AppCompatActivity implements SurfaceTe
         mPrevSurfaceTexture.getTransformMatrix(mTextureM);
 
         GLES20.glViewport(0, 0, mSurfaceView.getMeasuredWidth(), mSurfaceView.getMeasuredHeight());
-        mPrevProgram.drawFrame();
+        mPrevProgram.draw();
         mEGLCore.swapBuffers(mPreviewSurface);
 
         if (mIsRecording) {
             mEGLCore.makeCurrent(mRecorderSurface);
             GLES20.glViewport(0, 0, ENCODER_WIDTH, ENCODER_HEIGHT);
-            mPrevProgram.drawFrame();
+            mPrevProgram.draw();
             mEncoder.drainEncoder();
             mEGLCore.setPresentationTime(mRecorderSurface, mPrevSurfaceTexture.getTimestamp());
             mEGLCore.swapBuffers(mRecorderSurface);

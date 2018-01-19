@@ -50,6 +50,10 @@
             android:name=".OpenGLES20L9Activity"
             android:label="预览 人脸检测" />
 
+        <activity
+            android:name=".OpenGLES20L10Activity"
+            android:label="多次绘制 颜色混合(加水印)" />
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

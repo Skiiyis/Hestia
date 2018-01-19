@@ -41,7 +41,7 @@ public class FBOGroupGLProgram implements GLProgram {
     }
 
     @Override
-    public void compileAndLink() {
+    public void compile() {
         /**
          * 创建FBO,获取一个可用纹理ID
          */
@@ -88,11 +88,11 @@ public class FBOGroupGLProgram implements GLProgram {
         /**
          * 编译所有gl程序
          */
-        mInputProgram.compileAndLink();
+        mInputProgram.compile();
         for (TextureGLProgram glProgram : mMiddleWareProgram) {
-            glProgram.compileAndLink();
+            glProgram.compile();
         }
-        mOutputProgram.compileAndLink();
+        mOutputProgram.compile();
     }
 
     /**
@@ -102,18 +102,18 @@ public class FBOGroupGLProgram implements GLProgram {
      * 输出程序从FBO读取纹理并渲染到外部(Surface,FBO 等)
      */
     @Override
-    public void drawFrame() {
+    public void draw() {
         GLES20.glViewport(0, 0, mInputTextureWidth, mInputTextureHeight);
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBuffer[0]);
-        mInputProgram.drawFrame();
+        mInputProgram.draw();
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
         for (int i = 0; i < mMiddleWareProgram.length; i++) {
             GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBuffer[i + 1]);
-            mMiddleWareProgram[i].drawFrame();
+            mMiddleWareProgram[i].draw();
             GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
         }
         GLES20.glViewport(0, 0, mViewportWidth, mViewportHeight);
-        mOutputProgram.drawFrame();
+        mOutputProgram.draw();
     }
 
     @Override

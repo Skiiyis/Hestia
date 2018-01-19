@@ -72,7 +72,7 @@ public class FilterFaceDetectorGLProgram implements TextureGLProgram, Camera.Fac
     }
 
     @Override
-    public void compileAndLink() {
+    public void compile() {
         mPixelBuf = ByteBuffer.allocate(mPrevWidth * mPrevHeight * 4);
 
         mVertexShaderHandle = ShaderHelper.compileShader(GLES20.GL_VERTEX_SHADER, RawResourceReader.readTextFileFromRawResource(mContext.get(), R.raw.filter_face_detector_vertex_sharder));
@@ -121,7 +121,7 @@ public class FilterFaceDetectorGLProgram implements TextureGLProgram, Camera.Fac
     }
 
     @Override
-    public void drawFrame() {
+    public void draw() {
         GLES20.glUseProgram(mProgramHandle);
         GLUtil.checkGlError("glUseProgram");
 

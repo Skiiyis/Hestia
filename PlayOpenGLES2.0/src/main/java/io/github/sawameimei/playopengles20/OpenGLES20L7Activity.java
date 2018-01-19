@@ -101,7 +101,7 @@ public class OpenGLES20L7Activity extends AppCompatActivity implements SurfaceTe
                 mPrevSurfaceTexture = new SurfaceTexture(glProgram.texture()[0]);
                 mPrevProgram = glProgram;
                 mPrevSurfaceTexture.setOnFrameAvailableListener(OpenGLES20L7Activity.this);
-                mPrevProgram.compileAndLink();
+                mPrevProgram.compile();
 
                 try {
                     mCamera = CameraUtil.prevCamera(Camera.CameraInfo.CAMERA_FACING_FRONT, mPrevSurfaceTexture, PREV_WIDTH, PREV_HEIGHT, PREV_FPS);
@@ -136,7 +136,7 @@ public class OpenGLES20L7Activity extends AppCompatActivity implements SurfaceTe
         mPrevSurfaceTexture.getTransformMatrix(mTextureM);
 
         GLES20.glViewport(0, 0, mSurfaceView.getMeasuredWidth(), mSurfaceView.getMeasuredHeight());
-        mPrevProgram.drawFrame();
+        mPrevProgram.draw();
         mEGLCore.swapBuffers(mPreviewSurface);
 
         if (mIsRecording) {
@@ -232,7 +232,7 @@ public class OpenGLES20L7Activity extends AppCompatActivity implements SurfaceTe
 
         private void handleRecord(long nsecs) {
             GLES20.glViewport(0, 0, ENCODER_WIDTH, ENCODER_HEIGHT);
-            mPrevProgram.drawFrame();
+            mPrevProgram.draw();
             mEncoder.drainEncoder();
             mEGLCore.setPresentationTime(mRecorderSurface, nsecs);
             mEGLCore.swapBuffers(mRecorderSurface);

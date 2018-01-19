@@ -112,6 +112,8 @@ if (supportsEs2)
 			//FBO
 			//http://blog.csdn.net/csxiaoshui/article/details/53082141
 
+//几个难点
+GLES 绘制透明通道， GLES 调整方向
 
 
 		

@@ -46,8 +46,6 @@ public class TextureHelper {
             GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
             // Load the bitmap into the bound texture.
             GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
-            // Recycle the bitmap, since its data has been loaded into OpenGL.
-            bitmap.recycle();
         }
         if (textureHandle[0] == 0) {
             throw new RuntimeException("Error loading texture.");

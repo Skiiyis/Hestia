@@ -84,7 +84,7 @@ public class CameraPreviewBeautyGLProgram implements TextureGLProgram {
     }
 
     @Override
-    public void compileAndLink() {
+    public void compile() {
         mVertexShaderHandle = ShaderHelper.compileShader(GLES20.GL_VERTEX_SHADER, RawResourceReader.readTextFileFromRawResource(mContext.get(), R.raw.camera_preview_beauty_vertex_sharder));
         mFragmentShaderHandle = ShaderHelper.compileShader(GLES20.GL_FRAGMENT_SHADER, RawResourceReader.readTextFileFromRawResource(mContext.get(), R.raw.camera_preview_beauty_fragment_sharder));
         mProgramHandle = ShaderHelper.createAndLinkProgram(mVertexShaderHandle, mFragmentShaderHandle, new String[]{"aPosition", "aTextureCoord"});
@@ -99,7 +99,7 @@ public class CameraPreviewBeautyGLProgram implements TextureGLProgram {
     }
 
     @Override
-    public void drawFrame() {
+    public void draw() {
         GLES20.glUseProgram(mProgramHandle);
         GLUtil.checkGlError("glUseProgram");
 
